@@ -7,8 +7,8 @@
             <span>👥</span>
           </div>
           <div class="card-title">
-            <h3>Responsables</h3>
-            <p>Buscar, editar o eliminar responsables</p>
+            <h3>Laboratoristas</h3>
+            <p>Buscar, editar o eliminar personal de laboratorio</p>
           </div>
         </div>
 
@@ -16,7 +16,7 @@
           <input
             type="text"
             v-model="searchQuery"
-            placeholder="Ingrese nombre, documento, cargo o código"
+            placeholder="Ingrese documento o código"
             class="search-input"
           />
           <button @click="refrescarLista" class="refresh-btn" :disabled="loading">

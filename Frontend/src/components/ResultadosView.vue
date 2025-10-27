@@ -4,11 +4,11 @@
       <div class="card ubicaciones-card">
         <div class="card-header">
           <div class="card-icon ubicaciones-icon">
-            <span>📍</span>
+            <span>💉</span>
           </div>
           <div class="card-title">
-            <h3>Buscar Ubicaciones</h3>
-            <p>Encuentra y gestiona las ubicaciones registradas</p>
+            <h3>Resultados Médicos</h3>
+            <p>Buscar, editar o eliminar resultados médicos</p>
           </div>
         </div>
 
@@ -16,7 +16,7 @@
           <input
             type="text"
             v-model="searchQuery"
-            placeholder="Ingrese nombre, área o código de la ubicación"
+            placeholder="Ingrese código de ingreso del paciente"
             class="search-input"
           />
           <button @click="refrescarLista" class="refresh-btn" :disabled="loading">
@@ -25,7 +25,7 @@
         </div>
 
         <div v-if="loading" class="loading-state">
-          <p>Cargando ubicaciones...</p>
+          <p>Cargando equipos...</p>
         </div>
 
         <div v-if="error" class="error-state">
@@ -34,33 +34,33 @@
         </div>
 
         <div v-if="!loading && !error" class="card-body ubicaciones-list">
-          <div v-if="ubicacionesFiltradas.length === 0" class="no-results">
+          <div v-if="equiposFiltrados.length === 0" class="no-results">
             <p>
               {{ searchQuery
-                ? 'No se encontraron ubicaciones que coincidan con la búsqueda'
-                : 'No hay ubicaciones registradas' }}
+                ? 'No se encontraron equipos que coincidan con la búsqueda'
+                : 'No hay equipos registrados' }}
             </p>
           </div>
 
           <div v-else>
             <p class="results-count">
-              {{ ubicacionesFiltradas.length }} ubicación(es) encontrada(s)
+              {{ equiposFiltrados.length }} equipo(s) encontrado(s)
             </p>
             <div
-              v-for="ubicacion in ubicacionesFiltradas"
-              :key="ubicacion.id"
+              v-for="equipo in equiposFiltrados"
+              :key="equipo.id"
               class="ubicacion-item"
             >
               <div class="ubicacion-info">
-                <p class="ubicacion-nombre">{{ ubicacion.nombre }}</p>
-                <p class="ubicacion-detalle">
-                  Código: {{ ubicacion.codigo }} – {{ ubicacion.ubicacion }}
-                </p>
-                <p class="ubicacion-telefono">📞 {{ ubicacion.telefono }}</p>
+                <p class="ubicacion-nombre">{{ equipo.nombre }}</p>
+                <p class="ubicacion-detalle"><strong>Marca:</strong> {{ equipo.marca }} | <strong>Modelo:</strong> {{ equipo.modelo }}</p>
+                <p class="ubicacion-detalle"><strong>Código:</strong> {{ equipo.codigo }} | <strong>Serial:</strong> {{ equipo.serial }}</p>
+                <p class="ubicacion-detalle"><strong>Ubicación:</strong> {{ equipo.ubicacion_nombre }}</p>
+                <p class="ubicacion-detalle"><strong>Responsable:</strong> {{ equipo.responsable_nombre }}</p>
               </div>
               <div class="acciones">
-                <button class="edit-btn" @click.stop="abrirModalEditar(ubicacion)">EDITAR</button>
-                <button class="delete-btn" @click.stop="eliminarUbicacion(ubicacion.id)">ELIMINAR</button>
+                <button class="edit-btn" @click.stop="abrirModalEditar(equipo)">EDITAR</button>
+                <button class="delete-btn" @click.stop="eliminarEquipo(equipo.id)">ELIMINAR</button>
               </div>
             </div>
           </div>
@@ -71,15 +71,46 @@
     <!-- Modal de edición -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>Editar Ubicación</h3>
+        <h3>Editar Equipo Médico</h3>
+        
         <label>Código</label>
-        <input v-model="ubicacionEditando.codigo" />
-        <label>Nombre</label>
-        <input v-model="ubicacionEditando.nombre" />
+        <input v-model="equipoEditando.codigo" placeholder="Ej: EQ-001" />
+        
+        <label>Nombre del Equipo</label>
+        <input v-model="equipoEditando.nombre" placeholder="Ej: Monitor de Signos Vitales" />
+        
+        <label>Marca</label>
+        <input v-model="equipoEditando.marca" placeholder="Ej: Philips" />
+        
+        <label>Modelo</label>
+        <input v-model="equipoEditando.modelo" placeholder="Ej: IntelliVue MX40" />
+        
+        <label>Serial</label>
+        <input v-model="equipoEditando.serial" placeholder="Ej: SN123456789" />
+        
         <label>Ubicación</label>
-        <input v-model="ubicacionEditando.ubicacion" />
-        <label>Teléfono</label>
-        <input v-model="ubicacionEditando.telefono" />
+        <select v-model="equipoEditando.ubicacion" required>
+          <option disabled value="">Seleccione una ubicación</option>
+          <option 
+            v-for="ubicacion in ubicaciones" 
+            :key="ubicacion.id" 
+            :value="ubicacion.id"
+          >
+            {{ ubicacion.nombre }}
+          </option>
+        </select>
+        
+        <label>Responsable</label>
+        <select v-model="equipoEditando.responsable" required>
+          <option disabled value="">Seleccione un responsable</option>
+          <option 
+            v-for="responsable in responsables" 
+            :key="responsable.id" 
+            :value="responsable.id"
+          >
+            {{ responsable.nombre }} {{ responsable.apellido }}
+          </option>
+        </select>
 
         <div class="modal-buttons">
           <button @click="guardarCambios" class="save-btn">Guardar Cambios</button>
@@ -94,33 +125,59 @@
 export default {
   data() {
     return {
-      ubicaciones: [],
+      equipos: [],
       searchQuery: '',
       loading: false,
       error: null,
       mostrarModal: false,
-      ubicacionEditando: null
+      equipoEditando: null,
+      ubicaciones: [],
+      responsables: []
     }
   },
   created() {
+    this.consultarEquipos()
     this.consultarUbicaciones()
+    this.consultarResponsables()
   },
   computed: {
-    ubicacionesFiltradas() {
-      if (!this.searchQuery) return this.ubicaciones
+    equiposFiltrados() {
+      if (!this.searchQuery) return this.equipos
       const q = this.searchQuery.toLowerCase()
-      return this.ubicaciones.filter(u =>
-        u.nombre.toLowerCase().includes(q) ||
-        u.codigo.toLowerCase().includes(q) ||
-        u.ubicacion.toLowerCase().includes(q) ||
-        u.telefono.includes(q)
+      return this.equipos.filter(e =>
+        e.codigo.toLowerCase().includes(q) ||
+        (e.nombre && e.nombre.toLowerCase().includes(q)) ||
+        e.marca.toLowerCase().includes(q) ||
+        e.modelo.toLowerCase().includes(q) ||
+        (e.serial && e.serial.toLowerCase().includes(q)) ||
+        (e.ubicacion_nombre && e.ubicacion_nombre.toLowerCase().includes(q)) ||
+        (e.responsable_nombre && e.responsable_nombre.toLowerCase().includes(q))
       )
     }
   },
   methods: {
-    consultarUbicaciones() {
+    consultarEquipos() {
       this.loading = true
       this.error = null
+      fetch('http://localhost/pacientes/equipos_medicos.php')
+        .then(r => {
+          if (!r.ok) throw new Error('Error en la respuesta del servidor')
+          return r.json()
+        })
+        .then(datos => {
+          if (Array.isArray(datos)) this.equipos = datos
+          else this.equipos = []
+        })
+        .catch(err => {
+          console.error(err)
+          this.error = 'Error al cargar los equipos'
+          this.equipos = []
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    consultarUbicaciones() {
       fetch('http://localhost/pacientes/ubicaciones.php')
         .then(r => {
           if (!r.ok) throw new Error('Error en la respuesta del servidor')
@@ -131,62 +188,88 @@ export default {
           else this.ubicaciones = []
         })
         .catch(err => {
-          console.error(err)
-          this.error = 'Error al cargar las ubicaciones'
+          console.error('Error al cargar ubicaciones:', err)
           this.ubicaciones = []
         })
-        .finally(() => {
-          this.loading = false
+    },
+    consultarResponsables() {
+      fetch('http://localhost/pacientes/responsables.php')
+        .then(r => {
+          if (!r.ok) throw new Error('Error en la respuesta del servidor')
+          return r.json()
+        })
+        .then(datos => {
+          if (Array.isArray(datos)) this.responsables = datos
+          else this.responsables = []
+        })
+        .catch(err => {
+          console.error('Error al cargar responsables:', err)
+          this.responsables = []
         })
     },
     refrescarLista() {
-      this.consultarUbicaciones()
+      this.consultarEquipos()
     },
-    eliminarUbicacion(id) {
-      if (!confirm('¿Seguro que quieres eliminar esta ubicación?')) return
-      fetch(`http://localhost/pacientes/ubicaciones.php?borrar=${id}`)
+    eliminarEquipo(id) {
+      if (!confirm('¿Seguro que quieres eliminar este equipo?')) return
+      fetch(`http://localhost/pacientes/equipos_medicos.php?borrar=${id}`)
         .then(r => r.json())
         .then(resp => {
           if (resp.success === 1) {
-            alert('Ubicación eliminada correctamente')
-            this.consultarUbicaciones()
+            alert('Equipo eliminado correctamente')
+            this.consultarEquipos()
           } else {
-            alert(resp.message || 'Error al eliminar ubicación')
+            alert(resp.message || 'Error al eliminar equipo')
           }
         })
         .catch(err => {
           console.error('Error al eliminar:', err)
-          alert('Error al eliminar la ubicación')
+          alert('Error al eliminar el equipo')
         })
     },
-    abrirModalEditar(ubicacion) {
-      this.ubicacionEditando = { ...ubicacion } // copia para editar
+    abrirModalEditar(equipo) {
+      this.equipoEditando = { 
+        ...equipo,
+        ubicacion: equipo.ubicacion || '',
+        responsable: equipo.responsable || ''
+      }
       this.mostrarModal = true
     },
     cerrarModal() {
       this.mostrarModal = false
-      this.ubicacionEditando = null
+      this.equipoEditando = null
     },
     guardarCambios() {
-      if (!this.ubicacionEditando) return
-      fetch(`http://localhost/pacientes/ubicaciones.php?actualizar=${this.ubicacionEditando.id}`, {
+      if (!this.equipoEditando) return
+      
+      const datos = {
+        codigo: this.equipoEditando.codigo,
+        nombre: this.equipoEditando.nombre,
+        marca: this.equipoEditando.marca,
+        modelo: this.equipoEditando.modelo,
+        serial: this.equipoEditando.serial,
+        ubicacion: this.equipoEditando.ubicacion,
+        responsable: this.equipoEditando.responsable
+      }
+      
+      fetch(`http://localhost/pacientes/equipos_medicos.php?actualizar=${this.equipoEditando.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.ubicacionEditando)
+        body: JSON.stringify(datos)
       })
         .then(r => r.json())
         .then(resp => {
           if (resp.success === 1) {
-            alert('Ubicación actualizada correctamente')
+            alert('Equipo actualizado correctamente')
             this.cerrarModal()
-            this.consultarUbicaciones()
+            this.consultarEquipos()
           } else {
-            alert(resp.message || 'Error al actualizar ubicación')
+            alert(resp.message || 'Error al actualizar equipo')
           }
         })
         .catch(err => {
           console.error('Error al actualizar:', err)
-          alert('Error al actualizar la ubicación')
+          alert('Error al actualizar el equipo')
         })
     }
   }
@@ -194,7 +277,7 @@ export default {
 </script>
 
 <style scoped>
-/* Tus estilos originales aquí */
+/* Copiar estilos de PersonalView.vue */
 .page-container {
   display: flex;
   justify-content: center;
@@ -203,23 +286,19 @@ export default {
   background: #f5f7fa;
   padding: 20px;
 }
-
 .dashboard-cards {
   display: grid;
   grid-template-columns: 1fr;
   max-width: 600px;
   width: 100%;
 }
-
 .card {
   background: white;
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
   border: 1px solid #e8ecf0;
 }
-
 .card-header {
   display: flex;
   align-items: flex-start;
@@ -251,9 +330,6 @@ export default {
   margin: 0;
   line-height: 1.4;
 }
-.card-body {
-  margin-bottom: 20px;
-}
 .search-input {
   width: 100%;
   padding: 12px;
@@ -283,10 +359,6 @@ export default {
 .retry-btn:hover {
   background: #667eea;
   color: white;
-}
-.refresh-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 .loading-state,
 .error-state {
@@ -333,7 +405,7 @@ export default {
 .ubicacion-nombre {
   font-weight: 600;
   color: #2c3e50;
-  margin: 0 0 5px 0;
+  margin: 0 0 8px 0;
   font-size: 16px;
 }
 .ubicacion-detalle {
@@ -341,14 +413,13 @@ export default {
   color: #7f8c8d;
   margin: 0 0 5px 0;
 }
-.ubicacion-telefono {
-  font-size: 12px;
+.ubicacion-detalle strong {
   color: #667eea;
-  margin: 0;
-  font-weight: 500;
 }
-
-/* botones */
+.acciones {
+  display: flex;
+  gap: 6px;
+}
 .edit-btn {
   background: #3498db;
   color: white;
@@ -357,7 +428,6 @@ export default {
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
-  margin-right: 6px;
 }
 .edit-btn:hover {
   background: #2980b9;
@@ -392,25 +462,38 @@ export default {
   background: #fff;
   padding: 20px;
   border-radius: 12px;
-  width: 350px;
+  width: 400px;
   max-width: 90%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 .modal-content h3 {
   margin-top: 0;
+  color: #2c3e50;
 }
 .modal-content label {
   font-size: 13px;
   color: #7f8c8d;
   margin-top: 10px;
   display: block;
+  font-weight: 500;
 }
-.modal-content input {
+.modal-content input,
+.modal-content select {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
   border: 1px solid #dee2e6;
   border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.modal-content input:focus,
+.modal-content select:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
 }
 .modal-buttons {
   margin-top: 15px;
@@ -418,22 +501,28 @@ export default {
   justify-content: flex-end;
   gap: 8px;
 }
+.cancel-btn {
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.cancel-btn:hover {
+  background: #7f8c8d;
+}
 .save-btn {
   background: #3498db;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
 }
-.cancel-btn {
-  background: #bdc3c7;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
+.save-btn:hover {
+  background: #2980b9;
 }
 </style>

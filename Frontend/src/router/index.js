@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/components/HomeView.vue'
-import UbicacionesView from '@/components/UbicacionesView.vue'
-import PersonalView from '@/components/PersonalView.vue'
-import EquiposView from '@/components/EquiposView.vue'
+import PacientesView from '@/components/PacientesView.vue'
+import LaboratoristasView from '@/components/LaboratoristasView.vue'
+import ResultadosView from '@/components/ResultadosView.vue'
 import NuevaUbicacion from '@/components/NuevaUbicacion.vue'
 import NuevoPersonal from '@/components/NuevoPersonal.vue'
 import NuevoEquipo from '@/components/NuevoEquipo.vue'
@@ -13,19 +13,19 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/ubicacion',
-    name: 'ubicacion',
-    component: UbicacionesView
+    path: '/pacientes',
+    name: 'pacientes',
+    component: PacientesView
   },
   {
-    path: '/personal',
-    name: 'personal',
-    component: PersonalView
+    path: '/laboratoristas',
+    name: 'laboratoristas',
+    component: LaboratoristasView
   },
   {
-    path: '/equipos',
-    name: 'equipos',
-    component: EquiposView
+    path: '/resultados',
+    name: 'resultados',
+    component: ResultadosView
   },
   { 
     path: '/ubicacion/nueva',
