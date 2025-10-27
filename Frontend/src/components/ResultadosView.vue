@@ -283,7 +283,8 @@ export default {
   justify-content: center;
   align-items: first baseline;
   min-height: 100vh;
-  background: #f5f7fa;
+  /* background: #f5f7fa; */
+  background: none;
   padding: 20px;
 }
 .dashboard-cards {
@@ -293,7 +294,7 @@ export default {
   width: 100%;
 }
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
