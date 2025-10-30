@@ -4,11 +4,11 @@
       <div class="card ubicaciones-card">
         <div class="card-header">
           <div class="card-icon ubicaciones-icon">
-            <span>👤</span>
+            <span>😷</span>
           </div>
           <div class="card-title">
-            <h3>Nuevo Responsable</h3>
-            <p>Registrar un nuevo responsable en el sistema</p>
+            <h3>Nuevo Paciente</h3>
+            <p>Registrar nuevo paciente en el sistema</p>
           </div>
         </div>
 
@@ -26,8 +26,8 @@
             <label>Apellido</label>
             <input v-model="apellido" type="text" placeholder="Apellido" required />
 
-            <label>Cargo</label>
-            <input v-model="cargo" type="text" placeholder="Cargo" required />
+            <!-- <label>Cargo</label>
+            <input v-model="cargo" type="text" placeholder="Cargo" required /> -->
 
             <label>Teléfono</label>
             <input v-model="telefono" type="text" placeholder="Teléfono" required />

@@ -3,9 +3,9 @@ import HomeView from '@/components/HomeView.vue'
 import PacientesView from '@/components/PacientesView.vue'
 import LaboratoristasView from '@/components/LaboratoristasView.vue'
 import ResultadosView from '@/components/ResultadosView.vue'
-import NuevaUbicacion from '@/components/NuevaUbicacion.vue'
-import NuevoPersonal from '@/components/NuevoPersonal.vue'
-import NuevoEquipo from '@/components/NuevoEquipo.vue'
+import NuevoResultado from '@/components/NuevoResultado.vue'
+import NuevoPaciente from '@/components/NuevoPaciente.vue'
+import NuevoLaboratorista from '@/components/NuevoLaboratorista.vue'
 const routes = [
   {
     path: '/',
@@ -28,19 +28,19 @@ const routes = [
     component: ResultadosView
   },
   { 
-    path: '/ubicacion/nueva',
-    name: 'nuevaUbicacion',
-    component: NuevaUbicacion 
+    path: '/resultados/nuevo',
+    name: 'NuevoResultado',
+    component: NuevoResultado 
   },
   {
-    path: '/personal/nuevo',
-    name: 'nuevoPersonal',
-    component: NuevoPersonal
+    path: '/paciente/nuevo',
+    name: 'NuevoPaciente',
+    component: NuevoPaciente
   },
   {
-  path: '/equipo/nuevo',
-  name: 'nuevoEquipo',
-  component: NuevoEquipo
+  path: '/laboratorista/nuevo',
+  name: 'NuevoLaboratorista',
+  component: NuevoLaboratorista
 }
 ]
 

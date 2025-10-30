@@ -5,7 +5,7 @@
     <div class="card pacientes-card" :class="{ loading: loading.pacientes }">
       <div class="card-header">
         <div class="card-icon pacientes-icon">
-          <span>🧍‍♂️</span>
+          <span>😷</span>
         </div>
         <div class="card-title">
           <h3>Pacientes</h3>
@@ -14,17 +14,17 @@
       </div>
 
       <div class="card-body">
-        <div class="card-number">{{ pacientesTotal }}</div>
+        <div class="card-number">Cantidad</div>
         <div class="card-label">Total</div>
       </div>
 
       <div class="card-actions">
-        <button @click="nuevoPaciente" class="btn btn-primary">
+        <router-link to="/paciente/nuevo" class="btn btn-primary">
           <span class="btn-icon">+</span> Nuevo Paciente
-        </button>
-        <button @click="irAPacientes" class="btn btn-secondary">
+        </router-link>
+        <router-link to="/pacientes" class="btn btn-secondary">
           <span class="btn-icon">📋</span> Ver Todos
-        </button>
+        </router-link>
       </div>
     </div>
 
@@ -41,17 +41,17 @@
       </div>
 
       <div class="card-body">
-        <div class="card-number">{{ laboratoristasTotal }}</div>
+        <div class="card-number">Cantidad</div>
         <div class="card-label">Total</div>
       </div>
 
       <div class="card-actions">
-        <button @click="nuevoLaboratorista" class="btn btn-primary">
+        <router-link to="/laboratorista/nuevo" class="btn btn-primary">
           <span class="btn-icon">+</span> Nuevo Laboratorista
-        </button>
-        <button @click="irALaboratoristas" class="btn btn-secondary">
+        </router-link>
+        <router-link to="/laboratoristas" class="btn btn-secondary">
           <span class="btn-icon">📋</span> Ver Todos
-        </button>
+        </router-link>
       </div>
     </div>
 
@@ -70,12 +70,26 @@
       <div class="card-body">
         <label class="input-label" for="docId">Documento de Identificación</label>
         <div class="input-group">
-          <input id="docId" type="text" v-model="documentoId" placeholder="Ej: 12345678" class="input-field" />
-          <button @click="buscarResultado" class="btn btn-search">
+          <input
+            id="docId"
+            type="text"
+            v-model="documentoId"
+            placeholder="Ej: 12345678"
+            class="input-field"
+          />
+          <router-link to="/resultados" class="btn btn-search">
+            <span class="btn-icon">🔍 Buscar</span> 
+          </router-link>
+          
+
+          <!-- <button @click="buscarResultado" class="btn btn-search">
             🔍 Buscar
-          </button>
+          </button> -->
         </div>
       </div>
+      <router-link to="/resultados" class="btn btn-secondary">
+            <span class="btn-icon">📋</span> Ver Todos
+          </router-link>
     </div>
   </div>
 </template>
@@ -90,10 +104,7 @@ export default {
         pacientes: false,
         laboratoristas: false,
         resultados: false
-      },
-      pacientes: { total: 120 },
-      laboratoristas: { total: 35 },
-      resultados: { total: 480 }
+      }
     }
   },
   methods: {
@@ -103,21 +114,8 @@ export default {
         return;
       }
       console.log('Buscando resultados para documento:', this.documentoId);
-    },
-    nuevoPaciente() { console.log('Nuevo paciente'); },
-    irAPacientes() { console.log('Ir a pacientes'); },
-    nuevoLaboratorista() { console.log('Nuevo laboratorista'); },
-    irALaboratoristas() { console.log('Ir a laboratoristas'); }
-  },
-  computed: {
-    pacientesTotal() {
-      return this.loading.pacientes ? '...' : this.pacientes.total;
-    },
-    laboratoristasTotal() {
-      return this.loading.laboratoristas ? '...' : this.laboratoristas.total;
-    },
-    resultadosTotal() {
-      return this.loading.resultados ? '...' : this.resultados.total;
+      // Aquí podrías hacer una redirección, por ejemplo:
+      // this.$router.push(`/resultados/${this.documentoId}`);
     }
   }
 }
@@ -231,6 +229,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  text-decoration: none;
 }
 
 .btn-primary {

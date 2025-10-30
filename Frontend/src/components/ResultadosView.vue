@@ -4,7 +4,7 @@
       <div class="card ubicaciones-card">
         <div class="card-header">
           <div class="card-icon ubicaciones-icon">
-            <span>💉</span>
+            <span>📊</span>
           </div>
           <div class="card-title">
             <h3>Resultados Médicos</h3>

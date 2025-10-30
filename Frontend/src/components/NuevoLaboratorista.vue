@@ -4,20 +4,20 @@
       <div class="card ubicaciones-card">
         <div class="card-header">
           <div class="card-icon ubicaciones-icon">
-            <span>🩺</span>
+            <span>🧪</span>
           </div>
           <div class="card-title">
-            <h3>{{ isEdit ? 'Editar Equipo Médico' : 'Nuevo Equipo Médico' }}</h3>
-            <p>{{ isEdit ? 'Actualizar información del equipo médico' : 'Registrar un nuevo equipo médico' }}</p>
+            <h3>{{ isEdit ? 'Editar Laboratorista' : 'Nuevo Laboratorista' }}</h3>
+            <p>{{ isEdit ? 'Actualizar información del laboratorista' : 'Registrar un nuevo laboratorista' }}</p>
           </div>
         </div>
 
         <div class="card-body">
           <form @submit.prevent="guardarEquipo">
             <label>Código</label>
-            <input v-model="codigo" type="text" placeholder="Código del equipo" required />
+            <input v-model="codigo" type="text" placeholder="Código del laboratorista" required />
 
-            <label>Marca</label>
+            <!-- <label>Marca</label>
             <input v-model="marca" type="text" placeholder="Marca" required />
 
             <label>Modelo</label>
@@ -37,7 +37,7 @@
               <option v-for="r in responsables" :key="r.id" :value="r.id">
                 {{ r.nombre }} {{ r.apellido }}
               </option>
-            </select>
+            </select> -->
 
             <button type="submit" class="save-btn">{{ isEdit ? 'Actualizar' : 'Guardar' }}</button>
           </form>
