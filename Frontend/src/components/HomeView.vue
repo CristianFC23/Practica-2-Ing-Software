@@ -87,9 +87,15 @@
           </button> -->
         </div>
       </div>
+        <div class="card-actions">
+        <router-link to="/resultados/nuevo" class="btn btn-primary">
+          <span class="btn-icon">+</span> Nuevo Resultado
+        </router-link>
       <router-link to="/resultados" class="btn btn-secondary">
             <span class="btn-icon">📋</span> Ver Todos
           </router-link>
+      </div>
+      
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <h2>Nueva Ubicación</h2>
+    <h2>Nuevo Resultado</h2>
     <form @submit.prevent="enviarUbicacion">
       <div class="form-group">
         <label for="codigo">Código:</label>
@@ -13,16 +13,16 @@
       </div>
 
       <div class="form-group">
-        <label for="ubicacion">Ubicación:</label>
+        <label for="ubicacion">examen1:</label>
         <input type="text" id="ubicacion" v-model="form.ubicacion" required />
       </div>
 
       <div class="form-group">
-        <label for="telefono">Teléfono:</label>
+        <label for="telefono">examen2:</label>
         <input type="text" id="telefono" v-model="form.telefono" required />
       </div>
 
-      <button type="submit" class="btn btn-primary">Guardar Ubicación</button>
+      <button type="submit" class="btn btn-primary">Guardar resultado</button>
     </form>
 
     <p v-if="mensaje" :class="{ 'success': exito, 'error': !exito }">
