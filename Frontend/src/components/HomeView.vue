@@ -80,22 +80,17 @@
           <router-link to="/resultados" class="btn btn-search">
             <span class="btn-icon">🔍 Buscar</span> 
           </router-link>
-          
-
-          <!-- <button @click="buscarResultado" class="btn btn-search">
-            🔍 Buscar
-          </button> -->
         </div>
       </div>
-        <div class="card-actions">
+      
+      <div class="card-actions">
         <router-link to="/resultados/nuevo" class="btn btn-primary">
           <span class="btn-icon">+</span> Nuevo Resultado
         </router-link>
-      <router-link to="/resultados" class="btn btn-secondary">
-            <span class="btn-icon">📋</span> Ver Todos
-          </router-link>
+        <router-link to="/resultados" class="btn btn-secondary">
+          <span class="btn-icon">📋</span> Ver Todos
+        </router-link>
       </div>
-      
     </div>
   </div>
 </template>
@@ -120,8 +115,6 @@ export default {
         return;
       }
       console.log('Buscando resultados para documento:', this.documentoId);
-      // Aquí podrías hacer una redirección, por ejemplo:
-      // this.$router.push(`/resultados/${this.documentoId}`);
     }
   }
 }
@@ -135,8 +128,10 @@ export default {
   gap: 30px;
   max-width: 1200px;
   margin: 40px auto;
-  padding: 0 20px;
+  padding: 0 20px 40px;
   width: 100%;
+  overflow-y: auto;
+  max-height: calc(100vh - 80px);
 }
 
 .card {
@@ -220,6 +215,12 @@ export default {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Ajuste específico para los botones de la card de resultados */
+.resultados-card .card-actions {
+  margin-top: -15px;
 }
 
 .btn {
@@ -267,6 +268,7 @@ export default {
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .btn-search:hover {
@@ -317,3 +319,4 @@ export default {
   }
 }
 </style>
+
