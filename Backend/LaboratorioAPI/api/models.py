@@ -17,6 +17,8 @@ class Laboratorist(models.Model):
     telefono = models.CharField(max_length=100)
     
 class LabResults(models.Model):
+    cedula = models.CharField(max_length=100)
+    cod_ing_r = models.CharField(max_length=100)
     col_tot = models.CharField(max_length=100)
     col_hdl = models.CharField(max_length=100)
     col_ldl  = models.CharField(max_length=100)

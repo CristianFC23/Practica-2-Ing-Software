@@ -1,25 +1,46 @@
 <template>
   <div class="form-container">
-    <h2>Nuevo Resultado</h2>
+
+    <div class="card-header">
+      <div class="card-icon ubicaciones-icon">
+        <span>📊</span>
+      </div>
+      <div class="card-title">
+        <h3>Nuevo resultado laboratorio</h3>
+        <p>Ingresar resultados de laboratorio de un paciente</p>
+      </div>
+    </div>
+
+
     <form @submit.prevent="enviarUbicacion">
       <div class="form-group">
-        <label for="codigo">Código:</label>
+        <label for="codigo">Codigo Ingreso:</label>
         <input type="text" id="codigo" v-model="form.codigo" required />
       </div>
 
       <div class="form-group">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" v-model="form.nombre" required />
+        <label for="cedula">Cedula del paciente:</label>
+        <input type="text" id="cedula" v-model="form.cedula" required />
       </div>
 
       <div class="form-group">
-        <label for="ubicacion">examen1:</label>
-        <input type="text" id="ubicacion" v-model="form.ubicacion" required />
+        <label for="col_total">Resultados Colesterol Total:</label>
+        <input type="text" id="col_total" v-model="form.col_total" required />
       </div>
 
       <div class="form-group">
-        <label for="telefono">examen2:</label>
-        <input type="text" id="telefono" v-model="form.telefono" required />
+        <label for="col_rhdl">Resultados Colesterol HDL:</label>
+        <input type="text" id="col_rhdl" v-model="form.col_rhdl" required />
+      </div>
+
+      <div class="form-group">
+        <label for="col_rldl">Resultados Colesterol LDL:</label>
+        <input type="text" id="col_rldl" v-model="form.col_rldl" required />
+      </div>
+
+      <div class="form-group">
+        <label for="trigliceridos">Resultados Trigliceridos:</label>
+        <input type="text" id="trigliceridos" v-model="form.trigliceridos" required />
       </div>
 
       <button type="submit" class="btn btn-primary">Guardar resultado</button>
@@ -82,7 +103,8 @@ export default {
   max-width: 500px;
   margin: 0 auto;
   padding: 20px;
-  background: #fff;
+  margin-top: 25px;
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -139,5 +161,31 @@ input {
   color: red;
   text-align: center;
   margin-top: 10px;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-right: 15px;
+}
+.ubicaciones-icon {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+.card-title h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: #2c3e50;
 }
 </style>

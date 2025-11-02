@@ -1,9 +1,9 @@
 <template>
   <div class="page-container">
     <div class="dashboard-cards">
-      <div class="card ubicaciones-card">
+      <div class="card pacientes-card">
         <div class="card-header">
-          <div class="card-icon ubicaciones-icon">
+          <div class="card-icon pacientes-icon">
             <span>😷</span>
           </div>
           <div class="card-title">
@@ -13,14 +13,23 @@
         </div>
 
         <div class="card-body">
-          <input type="text" v-model="searchQuery" placeholder="Ingrese documento del paciente" class="search-input" />
+          <input
+            type="text"
+            v-model="searchQuery"
+            placeholder="Ingrese documento del paciente"
+            class="search-input"
+          />
           <button @click="refrescarLista" class="refresh-btn" :disabled="loading">
-            {{ loading ? 'Cargando...' : 'Refrescar' }}
+            {{ loading ? "Cargando..." : "Refrescar" }}
           </button>
+
+          <router-link to="/paciente/nuevo" class="btn btn-primary">
+          <span class="btn-icon">+</span> Nuevo Paciente
+          </router-link>
         </div>
 
         <div v-if="loading" class="loading-state">
-          <p>Cargando ubicaciones...</p>
+          <p>Cargando pacientes...</p>
         </div>
 
         <div v-if="error" class="error-state">
@@ -28,30 +37,42 @@
           <button @click="refrescarLista" class="retry-btn">Reintentar</button>
         </div>
 
-        <div v-if="!loading && !error" class="card-body ubicaciones-list">
-          <div v-if="ubicacionesFiltradas.length === 0" class="no-results">
+        <div v-if="!loading && !error" class="card-body pacientes-list">
+          <div v-if="pacientesFiltrados.length === 0" class="no-results">
             <p>
-              {{ searchQuery
-                ? 'No se encontraron ubicaciones que coincidan con la búsqueda'
-                : 'No hay ubicaciones registradas' }}
+              {{
+                searchQuery
+                  ? "No se encontraron pacientes que coincidan con la búsqueda"
+                  : "No hay pacientes registrados"
+              }}
             </p>
           </div>
 
           <div v-else>
             <p class="results-count">
-              {{ ubicacionesFiltradas.length }} ubicación(es) encontrada(s)
+              {{ pacientesFiltrados.length }} paciente(s) encontrado(s)
             </p>
-            <div v-for="ubicacion in ubicacionesFiltradas" :key="ubicacion.id" class="ubicacion-item">
-              <div class="ubicacion-info">
-                <p class="ubicacion-nombre">{{ ubicacion.nombre }}</p>
-                <p class="ubicacion-detalle">
-                  Código: {{ ubicacion.codigo }} – {{ ubicacion.ubicacion }}
+            <div
+              v-for="paciente in pacientesFiltrados"
+              :key="paciente.id"
+              class="paciente-item"
+            >
+              <div class="paciente-info">
+                <p class="paciente-nombre">
+                  {{ paciente.name }} {{ paciente.lastname }}
                 </p>
-                <p class="ubicacion-telefono">📞 {{ ubicacion.telefono }}</p>
+                <p class="paciente-detalle">
+                  Código ingreso: {{ paciente.cod_ing }} – Cédula: {{ paciente.documento }}
+                </p>
+                <p class="paciente-telefono">📞 {{ paciente.telefono }}</p>
               </div>
               <div class="acciones">
-                <button class="edit-btn" @click.stop="abrirModalEditar(ubicacion)">EDITAR</button>
-                <button class="delete-btn" @click.stop="eliminarUbicacion(ubicacion.id)">ELIMINAR</button>
+                <button class="edit-btn" @click.stop="abrirModalEditar(paciente)">
+                  EDITAR
+                </button>
+                <button class="delete-btn" @click.stop="eliminarPaciente(paciente.id)">
+                  ELIMINAR
+                </button>
               </div>
             </div>
           </div>
@@ -62,15 +83,19 @@
     <!-- Modal de edición -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>Editar Ubicación</h3>
-        <label>Código</label>
-        <input v-model="ubicacionEditando.codigo" />
+        <h3>Editar Paciente</h3>
         <label>Nombre</label>
-        <input v-model="ubicacionEditando.nombre" />
-        <label>Ubicación</label>
-        <input v-model="ubicacionEditando.ubicacion" />
+        <input v-model="pacienteEditando.name" />
+        <label>Apellido</label>
+        <input v-model="pacienteEditando.lastname" />
+        <label>Documento</label>
+        <input v-model="pacienteEditando.documento" />
+        <label>Código de Ingreso</label>
+        <input v-model="pacienteEditando.cod_ing" />
+        <label>Dirección</label>
+        <input v-model="pacienteEditando.direccion" />
         <label>Teléfono</label>
-        <input v-model="ubicacionEditando.telefono" />
+        <input v-model="pacienteEditando.telefono" />
 
         <div class="modal-buttons">
           <button @click="guardarCambios" class="save-btn">Guardar Cambios</button>
@@ -82,116 +107,107 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
-      ubicaciones: [],
-      searchQuery: '',
+      pacientes: [],
+      searchQuery: "",
       loading: false,
       error: null,
       mostrarModal: false,
-      ubicacionEditando: null
-    }
+      pacienteEditando: null
+    };
   },
+
   created() {
-    this.consultarUbicaciones()
+    this.consultarPacientes();
   },
+
   computed: {
-    ubicacionesFiltradas() {
-      if (!this.searchQuery) return this.ubicaciones
-      const q = this.searchQuery.toLowerCase()
-      return this.ubicaciones.filter(u =>
-        u.nombre.toLowerCase().includes(q) ||
-        u.codigo.toLowerCase().includes(q) ||
-        u.ubicacion.toLowerCase().includes(q) ||
-        u.telefono.includes(q)
-      )
+    pacientesFiltrados() {
+      if (!this.searchQuery) return this.pacientes;
+      const q = this.searchQuery.toLowerCase();
+      return this.pacientes.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.lastname.toLowerCase().includes(q) ||
+          p.documento.toString().includes(q) ||
+          p.cod_ing.toLowerCase().includes(q) ||
+          p.telefono.includes(q)
+      );
     }
   },
+
   methods: {
-    consultarUbicaciones() {
-      this.loading = true
-      this.error = null
-      fetch('http://localhost/pacientes/ubicaciones.php')
-        .then(r => {
-          if (!r.ok) throw new Error('Error en la respuesta del servidor')
-          return r.json()
-        })
-        .then(datos => {
-          if (Array.isArray(datos)) this.ubicaciones = datos
-          else this.ubicaciones = []
-        })
-        .catch(err => {
-          console.error(err)
-          this.error = 'Error al cargar las ubicaciones'
-          this.ubicaciones = []
-        })
-        .finally(() => {
-          this.loading = false
-        })
+    async consultarPacientes() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await axios.get("http://localhost:8000/api/pacientes/");
+        this.pacientes = Array.isArray(response.data) ? response.data : [];
+      } catch (err) {
+        console.error(err);
+        this.error = "Error al cargar los pacientes.";
+        this.pacientes = [];
+      } finally {
+        this.loading = false;
+      }
     },
+
     refrescarLista() {
-      this.consultarUbicaciones()
+      this.consultarPacientes();
     },
-    eliminarUbicacion(id) {
-      if (!confirm('¿Seguro que quieres eliminar esta ubicación?')) return
-      fetch(`http://localhost/pacientes/ubicaciones.php?borrar=${id}`)
-        .then(r => r.json())
-        .then(resp => {
-          if (resp.success === 1) {
-            alert('Ubicación eliminada correctamente')
-            this.consultarUbicaciones()
-          } else {
-            alert(resp.message || 'Error al eliminar ubicación')
-          }
-        })
-        .catch(err => {
-          console.error('Error al eliminar:', err)
-          alert('Error al eliminar la ubicación')
-        })
+
+    async eliminarPaciente(id) {
+      if (!confirm("¿Seguro que quieres eliminar este paciente?")) return;
+      try {
+        await axios.delete(`http://localhost:8000/api/pacientes/${id}/`);
+        alert("Paciente eliminado correctamente");
+        this.consultarPacientes();
+      } catch (err) {
+        console.error("Error al eliminar:", err);
+        alert("Error al eliminar el paciente");
+      }
     },
-    abrirModalEditar(ubicacion) {
-      this.ubicacionEditando = { ...ubicacion } // copia para editar
-      this.mostrarModal = true
+
+    abrirModalEditar(paciente) {
+      this.pacienteEditando = { ...paciente };
+      this.mostrarModal = true;
     },
+
     cerrarModal() {
-      this.mostrarModal = false
-      this.ubicacionEditando = null
+      this.mostrarModal = false;
+      this.pacienteEditando = null;
     },
-    guardarCambios() {
-      if (!this.ubicacionEditando) return
-      fetch(`http://localhost/pacientes/ubicaciones.php?actualizar=${this.ubicacionEditando.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.ubicacionEditando)
-      })
-        .then(r => r.json())
-        .then(resp => {
-          if (resp.success === 1) {
-            alert('Ubicación actualizada correctamente')
-            this.cerrarModal()
-            this.consultarUbicaciones()
-          } else {
-            alert(resp.message || 'Error al actualizar ubicación')
-          }
-        })
-        .catch(err => {
-          console.error('Error al actualizar:', err)
-          alert('Error al actualizar la ubicación')
-        })
+
+    async guardarCambios() {
+      if (!this.pacienteEditando) return;
+      try {
+        await axios.put(
+          `http://localhost:8000/api/pacientes/${this.pacienteEditando.id}/`,
+          this.pacienteEditando
+        );
+        alert("Paciente actualizado correctamente");
+        this.cerrarModal();
+        this.consultarPacientes();
+      } catch (err) {
+        console.error("Error al actualizar:", err);
+        alert("Error al actualizar el paciente");
+      }
     }
   }
-}
+};
 </script>
 
 <style scoped>
-/* Tus estilos originales aquí */
+/* ✅ Se conservan exactamente tus estilos originales */
 .page-container {
   display: flex;
   justify-content: center;
   align-items: first baseline;
   min-height: 100vh;
-  /* background: #f5f7fa; */
   background: none;
   padding: 20px;
 }
@@ -229,7 +245,7 @@ export default {
   margin-right: 15px;
 }
 
-.ubicaciones-icon {
+.pacientes-icon {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
@@ -302,7 +318,7 @@ export default {
   color: #e74c3c;
 }
 
-.ubicaciones-list {
+.pacientes-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -321,7 +337,7 @@ export default {
   color: #7f8c8d;
 }
 
-.ubicacion-item {
+.paciente-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -332,36 +348,35 @@ export default {
   border-left: 4px solid #667eea;
 }
 
-.ubicacion-item:hover {
+.paciente-item:hover {
   background: #e9ecef;
   transform: translateX(5px);
 }
 
-.ubicacion-info {
+.paciente-info {
   flex: 1;
 }
 
-.ubicacion-nombre {
+.paciente-nombre {
   font-weight: 600;
   color: #2c3e50;
   margin: 0 0 5px 0;
   font-size: 16px;
 }
 
-.ubicacion-detalle {
+.paciente-detalle {
   font-size: 13px;
   color: #7f8c8d;
   margin: 0 0 5px 0;
 }
 
-.ubicacion-telefono {
+.paciente-telefono {
   font-size: 12px;
   color: #667eea;
   margin: 0;
   font-weight: 500;
 }
 
-/* botones */
 .edit-btn {
   background: #3498db;
   color: white;
@@ -391,7 +406,6 @@ export default {
   background: #c0392b;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -458,5 +472,27 @@ export default {
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 14px;
+  margin: 10px 50px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
 }
 </style>

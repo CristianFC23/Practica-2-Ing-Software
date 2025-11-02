@@ -175,4 +175,27 @@ html, body, #app {
     padding: 6px 10px;
   }
 }
+
+/* --- Scroll para listas grandes en tarjetas --- */
+.ubicaciones-list,
+.resultados-list,
+.laboratoristas-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.ubicaciones-list::-webkit-scrollbar,
+.resultados-list::-webkit-scrollbar,
+.laboratoristas-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ubicaciones-list::-webkit-scrollbar-thumb,
+.resultados-list::-webkit-scrollbar-thumb,
+.laboratoristas-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+}
+
 </style>

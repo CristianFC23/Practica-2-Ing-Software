@@ -22,6 +22,10 @@
           <button @click="refrescarLista" class="refresh-btn" :disabled="loading">
             {{ loading ? 'Cargando...' : 'Refrescar' }}
           </button>
+
+          <router-link to="/resultados/nuevo" class="btn btn-primary">
+            <span class="btn-icon">+</span> Nuevo Resultado
+          </router-link>
         </div>
 
         <div v-if="loading" class="loading-state">
@@ -525,5 +529,27 @@ export default {
 }
 .save-btn:hover {
   background: #2980b9;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 14px;
+  margin: 10px 50px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
 }
 </style>

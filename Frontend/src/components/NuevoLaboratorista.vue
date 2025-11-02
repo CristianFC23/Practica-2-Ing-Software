@@ -14,30 +14,20 @@
 
         <div class="card-body">
           <form @submit.prevent="guardarEquipo">
-            <label>Código</label>
-            <input v-model="codigo" type="text" placeholder="Código del laboratorista" required />
+            <label>Código Interno</label>
+            <input v-model="codigo" type="text" placeholder="Código" required />
 
-            <!-- <label>Marca</label>
-            <input v-model="marca" type="text" placeholder="Marca" required />
+            <label>Nombres</label>
+            <input v-model="nombreombre" type="text" placeholder="Nombre" required />
 
-            <label>Modelo</label>
-            <input v-model="modelo" type="text" placeholder="Modelo" required />
+            <label>Apellidos</label>
+            <input v-model="apellido" type="text" placeholder="apellido" required />
 
-            <label>Ubicación</label>
-            <select v-model="ubicacion" required>
-              <option disabled value="">Seleccione una ubicación</option>
-              <option v-for="u in ubicaciones" :key="u.id" :value="u.id">
-                {{ u.nombre }}
-              </option>
-            </select>
+            <label>Titulo o cargo</label>
+            <input v-model="titulo" type="text" placeholder="titulo" required />
 
-            <label>Responsable</label>
-            <select v-model="responsable" required>
-              <option disabled value="">Seleccione un responsable</option>
-              <option v-for="r in responsables" :key="r.id" :value="r.id">
-                {{ r.nombre }} {{ r.apellido }}
-              </option>
-            </select> -->
+            <label>Telefono</label>
+            <input v-model="telefono" type="text" placeholder="telefono" required />            
 
             <button type="submit" class="save-btn">{{ isEdit ? 'Actualizar' : 'Guardar' }}</button>
           </form>
@@ -135,7 +125,7 @@ export default {
   justify-content: center;
   align-items: first baseline;
   min-height: 100vh;
-  background: #f5f7fa;
+  /* background: #f5f7fa; */
   padding: 20px;
 }
 
@@ -147,7 +137,7 @@ export default {
 }
 
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -186,9 +176,11 @@ export default {
   line-height: 1.4;
 }
 .card-body label {
-  font-size: 13px;
-  color: #7f8c8d;
+  font-size: 15px;
+  font-weight: bold;
+  color: #000000;
   margin-top: 10px;
+  margin-bottom: 5px;
   display: block;
 }
 .card-body input, .card-body select {

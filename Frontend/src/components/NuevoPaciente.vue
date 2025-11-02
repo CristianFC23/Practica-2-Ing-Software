@@ -14,8 +14,8 @@
 
         <div class="card-body">
           <form @submit.prevent="crearResponsable">
-            <label>Código</label>
-            <input v-model="codigo" type="text" placeholder="Código" required />
+            <label>Código Ingreso</label>
+            <input v-model="codigo" type="text" placeholder="Código ingreso" required />
 
             <label>Documento</label>
             <input v-model="documento" type="text" placeholder="Documento" required />
@@ -26,8 +26,8 @@
             <label>Apellido</label>
             <input v-model="apellido" type="text" placeholder="Apellido" required />
 
-            <!-- <label>Cargo</label>
-            <input v-model="cargo" type="text" placeholder="Cargo" required /> -->
+            <label>Dirección</label>
+            <input v-model="direccion" type="text" placeholder="direccion" required />
 
             <label>Teléfono</label>
             <input v-model="telefono" type="text" placeholder="Teléfono" required />
@@ -98,7 +98,7 @@ export default {
   justify-content: center;
   align-items: first baseline;
   min-height: 100vh;
-  background: #f5f7fa;
+  /* background: #f5f7fa; */
   padding: 20px;
 }
 
@@ -110,7 +110,7 @@ export default {
 }
 
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -149,9 +149,11 @@ export default {
   line-height: 1.4;
 }
 .card-body label {
-  font-size: 13px;
-  color: #7f8c8d;
+  font-size: 15px;
+  font-weight: bold;
+  color: #000000;
   margin-top: 10px;
+  margin-bottom: 5px;
   display: block;
 }
 .card-body input {
