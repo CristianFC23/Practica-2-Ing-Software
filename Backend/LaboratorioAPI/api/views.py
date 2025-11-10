@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -168,3 +169,5 @@ class LabResultsView(View):
         else:
             datos = {"Message": "Result not found"}
         return JsonResponse(datos)
+
+# Create your views here.
