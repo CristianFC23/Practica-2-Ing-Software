@@ -130,7 +130,7 @@ export default {
   margin: 40px auto;
   padding: 0 20px 40px;
   width: 100%;
-  overflow-y: auto;
+  overflow-y:hidden;
   max-height: calc(100vh - 80px);
 }
 
@@ -312,7 +312,9 @@ export default {
 @media (max-width: 768px) {
   .dashboard-cards {
     grid-template-columns: 1fr;
+    overflow:auto;
   }
+
 
   .resultados-card {
     grid-column: auto;
