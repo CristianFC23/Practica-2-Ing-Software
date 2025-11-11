@@ -7,7 +7,7 @@
             <span>🧪</span>
           </div>
           <div class="card-title">
-            <h3>Laboratoristas</h3>
+            <h3>laboratorista</h3>
             <p>Buscar, editar o eliminar personal de laboratorio</p>
           </div>
         </div>
@@ -29,7 +29,7 @@
         </div>
 
         <div v-if="loading" class="loading-state">
-          <p>Cargando responsables...</p>
+          <p>Cargando laboratorista...</p>
         </div>
 
         <div v-if="error" class="error-state">
@@ -38,34 +38,34 @@
         </div>
 
         <div v-if="!loading && !error" class="card-body ubicaciones-list">
-          <div v-if="responsablesFiltrados.length === 0" class="no-results">
+          <div v-if="laboratoristaFiltrados.length === 0" class="no-results">
             <p>
               {{ searchQuery
-                ? 'No se encontraron responsables que coincidan con la búsqueda'
-                : 'No hay responsables registrados' }}
+                ? 'No se encontraron laboratorista que coincidan con la búsqueda'
+                : 'No hay laboratorista registrados' }}
             </p>
           </div>
 
           <div v-else>
             <p class="results-count">
-              {{ responsablesFiltrados.length }} responsable(s) encontrado(s)
+              {{ laboratoristaFiltrados.length }} laboratorista(s) encontrado(s)
             </p>
             <div
-              v-for="responsable in responsablesFiltrados"
-              :key="responsable.id"
+              v-for="laboratorista in laboratoristaFiltrados"
+              :key="laboratorista.id"
               class="ubicacion-item"
             >
               <div class="ubicacion-info">
-                <p class="ubicacion-nombre">{{ responsable.nombre }} {{ responsable.apellido }}</p>
+                <p class="ubicacion-nombre">{{ laboratorista.nombre }} {{ laboratorista.apellido }}</p>
                 <p class="ubicacion-detalle">
-                  Código: {{ responsable.codigo }} – Documento: {{ responsable.documento }}
+                  Código: {{ laboratorista.codigo }} – Documento: {{ laboratorista.documento }}
                 </p>
-                <p class="ubicacion-detalle">Cargo: {{ responsable.cargo }}</p>
-                <p class="ubicacion-telefono">📞 {{ responsable.telefono }}</p>
+                <p class="ubicacion-detalle">Cargo: {{ laboratorista.cargo }}</p>
+                <p class="ubicacion-telefono">📞 {{ laboratorista.telefono }}</p>
               </div>
               <div class="acciones">
-                <button class="edit-btn" @click.stop="abrirModalEditar(responsable)">EDITAR</button>
-                <button class="delete-btn" @click.stop="eliminarResponsable(responsable.id)">ELIMINAR</button>
+                <button class="edit-btn" @click.stop="abrirModalEditar(laboratorista)">EDITAR</button>
+                <button class="delete-btn" @click.stop="eliminarLaboratorista(laboratorista.id)">ELIMINAR</button>
               </div>
             </div>
           </div>
@@ -76,19 +76,19 @@
     <!-- Modal de edición -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>Editar Responsable</h3>
+        <h3>Editar laboratorista</h3>
         <label>Código</label>
-        <input v-model="responsableEditando.codigo" />
+        <input v-model="laboratoristaEditando.codigo" />
         <label>Documento</label>
-        <input v-model="responsableEditando.documento" />
+        <input v-model="laboratoristaEditando.documento" />
         <label>Nombre</label>
-        <input v-model="responsableEditando.nombre" />
+        <input v-model="laboratoristaEditando.nombre" />
         <label>Apellido</label>
-        <input v-model="responsableEditando.apellido" />
+        <input v-model="laboratoristaEditando.apellido" />
         <label>Cargo</label>
-        <input v-model="responsableEditando.cargo" />
+        <input v-model="laboratoristaEditando.cargo" />
         <label>Teléfono</label>
-        <input v-model="responsableEditando.telefono" />
+        <input v-model="laboratoristaEditando.telefono" />
 
         <div class="modal-buttons">
           <button @click="guardarCambios" class="save-btn">Guardar Cambios</button>
@@ -100,25 +100,27 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      responsables: [],
+      laboratorista: [],
       searchQuery: '',
       loading: false,
       error: null,
       mostrarModal: false,
-      responsableEditando: null
+      laboratoristaEditando: null
     }
   },
   created() {
-    this.consultarResponsables()
+    this.consultarlaboratorista()
   },
   computed: {
-    responsablesFiltrados() {
-      if (!this.searchQuery) return this.responsables
+    laboratoristaFiltrados() {
+      if (!this.searchQuery) return this.laboratorista
       const q = this.searchQuery.toLowerCase()
-      return this.responsables.filter(r =>
+      return this.laboratorista.filter(r =>
         r.nombre.toLowerCase().includes(q) ||
         r.apellido.toLowerCase().includes(q) ||
         r.codigo.toLowerCase().includes(q) ||
@@ -129,75 +131,76 @@ export default {
     }
   },
   methods: {
-    consultarResponsables() {
+    consultarlaboratorista() {
+
       this.loading = true
       this.error = null
-      fetch('http://localhost/pacientes/responsables.php')
+      axios.get('http://localhost:8080/api/laboratoristas/')
         .then(r => {
           if (!r.ok) throw new Error('Error en la respuesta del servidor')
           return r.json()
         })
         .then(datos => {
-          if (Array.isArray(datos)) this.responsables = datos
-          else this.responsables = []
+          if (Array.isArray(datos)) this.laboratorista = datos
+          else this.laboratorista = []
         })
         .catch(err => {
           console.error(err)
-          this.error = 'Error al cargar los responsables'
-          this.responsables = []
+          this.error = 'Error al cargar los laboratorista'
+          this.laboratorista = []
         })
         .finally(() => {
           this.loading = false
         })
     },
     refrescarLista() {
-      this.consultarResponsables()
+      this.consultarlaboratorista()
     },
-    eliminarResponsable(id) {
-      if (!confirm('¿Seguro que quieres eliminar este responsable?')) return
-      fetch(`http://localhost/pacientes/responsables.php?borrar=${id}`)
+    eliminarLaboratorista(id) {
+      if (!confirm('¿Seguro que quieres eliminar este laboratorista?')) return
+      axios.delete(`http://localhost:8080/api/laboratoristas/borrar=${id}`)
         .then(r => r.json())
         .then(resp => {
           if (resp.success === 1) {
-            alert('Responsable eliminado correctamente')
-            this.consultarResponsables()
+            alert('laboratorista eliminado correctamente')
+            this.consultarlaboratorista()
           } else {
-            alert(resp.message || 'Error al eliminar responsable')
+            alert(resp.message || 'Error al eliminar laboratorista')
           }
         })
         .catch(err => {
           console.error('Error al eliminar:', err)
-          alert('Error al eliminar el responsable')
+          alert('Error al eliminar el laboratorista')
         })
     },
-    abrirModalEditar(responsable) {
-      this.responsableEditando = { ...responsable }
+    abrirModalEditar(laboratorista) {
+      this.laboratoristaEditando = { ...laboratorista }
       this.mostrarModal = true
     },
     cerrarModal() {
       this.mostrarModal = false
-      this.responsableEditando = null
+      this.laboratoristaEditando = null
     },
     guardarCambios() {
-      if (!this.responsableEditando) return
-      fetch(`http://localhost/pacientes/responsables.php?actualizar=${this.responsableEditando.id}`, {
+      if (!this.laboratoristaEditando) return
+      axios.post(`http://localhost/pacientes/laboratorista.php?actualizar=${this.laboratoristaEditando.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.responsableEditando)
+        body: JSON.stringify(this.laboratoristaEditando)
       })
         .then(r => r.json())
         .then(resp => {
           if (resp.success === 1) {
-            alert('Responsable actualizado correctamente')
+            alert('laboratorista actualizado correctamente')
             this.cerrarModal()
-            this.consultarResponsables()
+            this.consultarlaboratorista()
           } else {
-            alert(resp.message || 'Error al actualizar responsable')
+            alert(resp.message || 'Error al actualizar laboratorista')
           }
         })
         .catch(err => {
           console.error('Error al actualizar:', err)
-          alert('Error al actualizar el responsable')
+          alert('Error al actualizar el laboratorista')
         })
     }
   }
