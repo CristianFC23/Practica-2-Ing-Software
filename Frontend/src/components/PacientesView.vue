@@ -24,7 +24,7 @@
           </button>
 
           <router-link to="/paciente/nuevo" class="btn btn-primary">
-          <span class="btn-icon">+</span> Nuevo Paciente
+            <span class="btn-icon">+</span> Nuevo Paciente
           </router-link>
         </div>
 
@@ -52,6 +52,7 @@
             <p class="results-count">
               {{ pacientesFiltrados.length }} paciente(s) encontrado(s)
             </p>
+
             <div
               v-for="paciente in pacientesFiltrados"
               :key="paciente.id"
@@ -66,6 +67,7 @@
                 </p>
                 <p class="paciente-telefono">📞 {{ paciente.telefono }}</p>
               </div>
+
               <div class="acciones">
                 <button class="edit-btn" @click.stop="abrirModalEditar(paciente)">
                   EDITAR
@@ -84,16 +86,22 @@
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
         <h3>Editar Paciente</h3>
+
         <label>Nombre</label>
         <input v-model="pacienteEditando.name" />
+
         <label>Apellido</label>
         <input v-model="pacienteEditando.lastname" />
+
         <label>Documento</label>
         <input v-model="pacienteEditando.documento" />
+
         <label>Código de Ingreso</label>
         <input v-model="pacienteEditando.cod_ing" />
+
         <label>Dirección</label>
         <input v-model="pacienteEditando.direccion" />
+
         <label>Teléfono</label>
         <input v-model="pacienteEditando.telefono" />
 
@@ -117,7 +125,8 @@ export default {
       loading: false,
       error: null,
       mostrarModal: false,
-      pacienteEditando: null
+      pacienteEditando: null,
+      apiUrl: "http://localhost:8000/api/pacientes/",
     };
   },
 
@@ -137,20 +146,20 @@ export default {
           p.cod_ing.toLowerCase().includes(q) ||
           p.telefono.includes(q)
       );
-    }
+    },
   },
 
   methods: {
+    // 🔹 Consultar lista de pacientes
     async consultarPacientes() {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.get("http://localhost:8000/api/pacientes/");
+        const response = await axios.get(this.apiUrl);
         this.pacientes = Array.isArray(response.data) ? response.data : [];
       } catch (err) {
-        console.error(err);
-        this.error = "Error al cargar los pacientes.";
-        this.pacientes = [];
+        console.error("Error al cargar pacientes:", err);
+        this.error = "No se pudo cargar la lista de pacientes.";
       } finally {
         this.loading = false;
       }
@@ -160,44 +169,46 @@ export default {
       this.consultarPacientes();
     },
 
+    // 🔹 Eliminar paciente
     async eliminarPaciente(id) {
       if (!confirm("¿Seguro que quieres eliminar este paciente?")) return;
       try {
-        await axios.delete(`http://localhost:8000/api/pacientes/${id}/`);
+        await axios.delete(`${this.apiUrl}${id}/`);
         alert("Paciente eliminado correctamente");
         this.consultarPacientes();
       } catch (err) {
-        console.error("Error al eliminar:", err);
+        console.error("Error al eliminar paciente:", err);
         alert("Error al eliminar el paciente");
       }
     },
 
+    // 🔹 Modal de edición
     abrirModalEditar(paciente) {
       this.pacienteEditando = { ...paciente };
       this.mostrarModal = true;
     },
-
     cerrarModal() {
       this.mostrarModal = false;
       this.pacienteEditando = null;
     },
 
+    // 🔹 Guardar cambios (PUT)
     async guardarCambios() {
       if (!this.pacienteEditando) return;
       try {
         await axios.put(
-          `http://localhost:8000/api/pacientes/${this.pacienteEditando.id}/`,
+          `${this.apiUrl}${this.pacienteEditando.id}/`,
           this.pacienteEditando
         );
         alert("Paciente actualizado correctamente");
         this.cerrarModal();
         this.consultarPacientes();
       } catch (err) {
-        console.error("Error al actualizar:", err);
+        console.error("Error al actualizar paciente:", err);
         alert("Error al actualizar el paciente");
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

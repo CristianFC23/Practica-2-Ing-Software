@@ -1,9 +1,9 @@
 <template>
   <div class="page-container">
     <div class="dashboard-cards">
-      <div class="card ubicaciones-card">
+      <div class="card resultadoes-card">
         <div class="card-header">
-          <div class="card-icon ubicaciones-icon">
+          <div class="card-icon resultadoes-icon">
             <span>📊</span>
           </div>
           <div class="card-title">
@@ -29,7 +29,7 @@
         </div>
 
         <div v-if="loading" class="loading-state">
-          <p>Cargando equipos...</p>
+          <p>Cargando resultadoss...</p>
         </div>
 
         <div v-if="error" class="error-state">
@@ -37,34 +37,34 @@
           <button @click="refrescarLista" class="retry-btn">Reintentar</button>
         </div>
 
-        <div v-if="!loading && !error" class="card-body ubicaciones-list">
-          <div v-if="equiposFiltrados.length === 0" class="no-results">
+        <div v-if="!loading && !error" class="card-body resultadoes-list">
+          <div v-if="resultadosFiltrados.length === 0" class="no-results">
             <p>
               {{ searchQuery
-                ? 'No se encontraron equipos que coincidan con la búsqueda'
-                : 'No hay equipos registrados' }}
+                ? 'No se encontraron resultadoss que coincidan con la búsqueda'
+                : 'No hay resultadoss registrados' }}
             </p>
           </div>
 
           <div v-else>
             <p class="results-count">
-              {{ equiposFiltrados.length }} equipo(s) encontrado(s)
+              {{ resultadosFiltrados.length }} resultados(s) encontrado(s)
             </p>
             <div
-              v-for="equipo in equiposFiltrados"
-              :key="equipo.id"
-              class="ubicacion-item"
+              v-for="resultados in resultadosFiltrados"
+              :key="resultados.id"
+              class="resultado-item"
             >
-              <div class="ubicacion-info">
-                <p class="ubicacion-nombre">{{ equipo.nombre }}</p>
-                <p class="ubicacion-detalle"><strong>Marca:</strong> {{ equipo.marca }} | <strong>Modelo:</strong> {{ equipo.modelo }}</p>
-                <p class="ubicacion-detalle"><strong>Código:</strong> {{ equipo.codigo }} | <strong>Serial:</strong> {{ equipo.serial }}</p>
-                <p class="ubicacion-detalle"><strong>Ubicación:</strong> {{ equipo.ubicacion_nombre }}</p>
-                <p class="ubicacion-detalle"><strong>Responsable:</strong> {{ equipo.responsable_nombre }}</p>
+              <div class="resultado-info">
+                <p class="resultado-nombre"><strong>Codigo ingreso:</strong> {{ resultados.cod_ing_r }}</p>
+                <p class="resultado-detalle"><strong>Cedula:</strong> {{ resultados.cedula }} </p>
+                <p class="resultado-detalle"><strong>Colesterol Total:</strong> {{ resultados.col_tot }}</p>
+                <p class="resultado-detalle"><strong>Colesterol HDL:</strong> {{ resultados.col_hdl }}</p>
+                <p class="resultado-detalle"><strong>Colesterol LDL:</strong> {{ resultados.col_ldl }}</p>
               </div>
               <div class="acciones">
-                <button class="edit-btn" @click.stop="abrirModalEditar(equipo)">EDITAR</button>
-                <button class="delete-btn" @click.stop="eliminarEquipo(equipo.id)">ELIMINAR</button>
+                <button class="edit-btn" @click.stop="abrirModalEditar(resultados)">EDITAR</button>
+                <button class="delete-btn" @click.stop="eliminarresultados(resultados.id)">ELIMINAR</button>
               </div>
             </div>
           </div>
@@ -75,37 +75,37 @@
     <!-- Modal de edición -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>Editar Equipo Médico</h3>
+        <h3>Editar resultados Médico</h3>
         
         <label>Código</label>
-        <input v-model="equipoEditando.codigo" placeholder="Ej: EQ-001" />
+        <input v-model="resultadosEditando.codigo" placeholder="Ej: EQ-001" />
         
-        <label>Nombre del Equipo</label>
-        <input v-model="equipoEditando.nombre" placeholder="Ej: Monitor de Signos Vitales" />
+        <label>Nombre del resultados</label>
+        <input v-model="resultadosEditando.nombre" placeholder="Ej: Monitor de Signos Vitales" />
         
         <label>Marca</label>
-        <input v-model="equipoEditando.marca" placeholder="Ej: Philips" />
+        <input v-model="resultadosEditando.marca" placeholder="Ej: Philips" />
         
         <label>Modelo</label>
-        <input v-model="equipoEditando.modelo" placeholder="Ej: IntelliVue MX40" />
+        <input v-model="resultadosEditando.modelo" placeholder="Ej: IntelliVue MX40" />
         
         <label>Serial</label>
-        <input v-model="equipoEditando.serial" placeholder="Ej: SN123456789" />
+        <input v-model="resultadosEditando.serial" placeholder="Ej: SN123456789" />
         
         <label>Ubicación</label>
-        <select v-model="equipoEditando.ubicacion" required>
+        <select v-model="resultadosEditando.resultado" required>
           <option disabled value="">Seleccione una ubicación</option>
           <option 
-            v-for="ubicacion in ubicaciones" 
-            :key="ubicacion.id" 
-            :value="ubicacion.id"
+            v-for="resultado in resultadoes" 
+            :key="resultado.id" 
+            :value="resultado.id"
           >
-            {{ ubicacion.nombre }}
+            {{ resultado.nombre }}
           </option>
         </select>
         
         <label>Responsable</label>
-        <select v-model="equipoEditando.responsable" required>
+        <select v-model="resultadosEditando.responsable" required>
           <option disabled value="">Seleccione un responsable</option>
           <option 
             v-for="responsable in responsables" 
@@ -129,152 +129,118 @@
 export default {
   data() {
     return {
-      equipos: [],
+      resultados: [],
       searchQuery: '',
       loading: false,
       error: null,
       mostrarModal: false,
-      equipoEditando: null,
-      ubicaciones: [],
+      resultadosEditando: null,
+      resultadoes: [],
       responsables: []
     }
   },
   created() {
-    this.consultarEquipos()
-    this.consultarUbicaciones()
+    this.consultarResultados()
+    this.consultarresultadoes()
     this.consultarResponsables()
   },
   computed: {
-    equiposFiltrados() {
-      if (!this.searchQuery) return this.equipos
+    resultadosFiltrados() {
+      if (!this.searchQuery) return this.resultados
       const q = this.searchQuery.toLowerCase()
-      return this.equipos.filter(e =>
-        e.codigo.toLowerCase().includes(q) ||
-        (e.nombre && e.nombre.toLowerCase().includes(q)) ||
-        e.marca.toLowerCase().includes(q) ||
-        e.modelo.toLowerCase().includes(q) ||
-        (e.serial && e.serial.toLowerCase().includes(q)) ||
-        (e.ubicacion_nombre && e.ubicacion_nombre.toLowerCase().includes(q)) ||
-        (e.responsable_nombre && e.responsable_nombre.toLowerCase().includes(q))
+      return this.resultados.filter(e =>
+        e.cod_ing_r?.toLowerCase().includes(q) ||
+        e.cedula?.toLowerCase().includes(q)
       )
     }
   },
   methods: {
-    consultarEquipos() {
+    async consultarResultados() {
       this.loading = true
       this.error = null
-      fetch('http://localhost/pacientes/equipos_medicos.php')
-        .then(r => {
-          if (!r.ok) throw new Error('Error en la respuesta del servidor')
-          return r.json()
-        })
-        .then(datos => {
-          if (Array.isArray(datos)) this.equipos = datos
-          else this.equipos = []
-        })
-        .catch(err => {
-          console.error(err)
-          this.error = 'Error al cargar los equipos'
-          this.equipos = []
-        })
-        .finally(() => {
-          this.loading = false
-        })
-    },
-    consultarUbicaciones() {
-      fetch('http://localhost/pacientes/ubicaciones.php')
-        .then(r => {
-          if (!r.ok) throw new Error('Error en la respuesta del servidor')
-          return r.json()
-        })
-        .then(datos => {
-          if (Array.isArray(datos)) this.ubicaciones = datos
-          else this.ubicaciones = []
-        })
-        .catch(err => {
-          console.error('Error al cargar ubicaciones:', err)
-          this.ubicaciones = []
-        })
-    },
-    consultarResponsables() {
-      fetch('http://localhost/pacientes/responsables.php')
-        .then(r => {
-          if (!r.ok) throw new Error('Error en la respuesta del servidor')
-          return r.json()
-        })
-        .then(datos => {
-          if (Array.isArray(datos)) this.responsables = datos
-          else this.responsables = []
-        })
-        .catch(err => {
-          console.error('Error al cargar responsables:', err)
-          this.responsables = []
-        })
-    },
-    refrescarLista() {
-      this.consultarEquipos()
-    },
-    eliminarEquipo(id) {
-      if (!confirm('¿Seguro que quieres eliminar este equipo?')) return
-      fetch(`http://localhost/pacientes/equipos_medicos.php?borrar=${id}`)
-        .then(r => r.json())
-        .then(resp => {
-          if (resp.success === 1) {
-            alert('Equipo eliminado correctamente')
-            this.consultarEquipos()
-          } else {
-            alert(resp.message || 'Error al eliminar equipo')
-          }
-        })
-        .catch(err => {
-          console.error('Error al eliminar:', err)
-          alert('Error al eliminar el equipo')
-        })
-    },
-    abrirModalEditar(equipo) {
-      this.equipoEditando = { 
-        ...equipo,
-        ubicacion: equipo.ubicacion || '',
-        responsable: equipo.responsable || ''
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/resultados/')
+        if (!res.ok) throw new Error('Error al obtener resultados')
+        const datos = await res.json()
+        this.resultados = Array.isArray(datos) ? datos : []
+      } catch (err) {
+        console.error(err)
+        this.error = 'Error al cargar los resultados'
+        this.resultados = []
+      } finally {
+        this.loading = false
       }
+    },
+
+    async consultarresultadoes() {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/pacientes/')
+        this.resultadoes = await res.json()
+      } catch (err) {
+        console.error('Error al cargar resultadoes:', err)
+        this.resultadoes = []
+      }
+    },
+
+    async consultarResponsables() {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/laboratoristas/')
+        this.responsables = await res.json()
+      } catch (err) {
+        console.error('Error al cargar responsables:', err)
+        this.responsables = []
+      }
+    },
+
+    refrescarLista() {
+      this.consultarResultados()
+    },
+
+    async eliminarResultado(id) {
+      if (!confirm('¿Seguro que quieres eliminar este resultado?')) return
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/labresults/${id}/`, {
+          method: 'DELETE'
+        })
+        if (res.ok) {
+          alert('Resultado eliminado correctamente')
+          this.consultarResultados()
+        } else {
+          alert('Error al eliminar el resultado')
+        }
+      } catch (err) {
+        console.error('Error al eliminar:', err)
+        alert('Error al eliminar el resultado')
+      }
+    },
+
+    abrirModalEditar(resultados) {
+      this.resultadosEditando = { ...resultados }
       this.mostrarModal = true
     },
     cerrarModal() {
       this.mostrarModal = false
-      this.equipoEditando = null
+      this.resultadosEditando = null
     },
-    guardarCambios() {
-      if (!this.equipoEditando) return
-      
-      const datos = {
-        codigo: this.equipoEditando.codigo,
-        nombre: this.equipoEditando.nombre,
-        marca: this.equipoEditando.marca,
-        modelo: this.equipoEditando.modelo,
-        serial: this.equipoEditando.serial,
-        ubicacion: this.equipoEditando.ubicacion,
-        responsable: this.equipoEditando.responsable
+
+    async guardarCambios() {
+      if (!this.resultadosEditando) return
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/labresults/${this.resultadosEditando.id}/`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.resultadosEditando)
+        })
+        if (res.ok) {
+          alert('Resultado actualizado correctamente')
+          this.cerrarModal()
+          this.consultarResultados()
+        } else {
+          alert('Error al actualizar el resultado')
+        }
+      } catch (err) {
+        console.error('Error al actualizar:', err)
       }
-      
-      fetch(`http://localhost/pacientes/equipos_medicos.php?actualizar=${this.equipoEditando.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datos)
-      })
-        .then(r => r.json())
-        .then(resp => {
-          if (resp.success === 1) {
-            alert('Equipo actualizado correctamente')
-            this.cerrarModal()
-            this.consultarEquipos()
-          } else {
-            alert(resp.message || 'Error al actualizar equipo')
-          }
-        })
-        .catch(err => {
-          console.error('Error al actualizar:', err)
-          alert('Error al actualizar el equipo')
-        })
     }
   }
 }
@@ -319,7 +285,7 @@ export default {
   font-size: 22px;
   margin-right: 15px;
 }
-.ubicaciones-icon {
+.resultadoes-icon {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
@@ -374,7 +340,7 @@ export default {
 .error-state {
   color: #e74c3c;
 }
-.ubicaciones-list {
+.resultadoes-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -390,7 +356,7 @@ export default {
   padding: 30px;
   color: #7f8c8d;
 }
-.ubicacion-item {
+.resultado-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -400,25 +366,25 @@ export default {
   transition: all 0.3s ease;
   border-left: 4px solid #667eea;
 }
-.ubicacion-item:hover {
+.resultado-item:hover {
   background: #e9ecef;
   transform: translateX(5px);
 }
-.ubicacion-info {
+.resultado-info {
   flex: 1;
 }
-.ubicacion-nombre {
+.resultado-nombre {
   font-weight: 600;
   color: #2c3e50;
   margin: 0 0 8px 0;
   font-size: 16px;
 }
-.ubicacion-detalle {
+.resultado-detalle {
   font-size: 13px;
   color: #7f8c8d;
   margin: 0 0 5px 0;
 }
-.ubicacion-detalle strong {
+.resultado-detalle strong {
   color: #667eea;
 }
 .acciones {

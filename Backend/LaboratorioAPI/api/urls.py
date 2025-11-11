@@ -11,10 +11,16 @@ from django.urls import path
 from .views import PatientView, LaboratoristView, LabResultsView
 
 urlpatterns = [
+    # Pacientes
     path('pacientes/', PatientView.as_view(), name='patients_list'),
-    path('pacientes/<int:id>', PatientView.as_view(), name='patient_process'),
+    path('pacientes/<int:id>/', PatientView.as_view(), name='patient_process'),
+
+    # Laboratoristas
     path('laboratoristas/', LaboratoristView.as_view(), name='laboratorist_list'),
-    path('laboratoristas/<int:id>', LaboratoristView.as_view(), name='laboratorist_process'),
+    path('laboratoristas/<int:id>/', LaboratoristView.as_view(), name='laboratorist_process'),
+
+    # Resultados de laboratorio
     path('resultados/', LabResultsView.as_view(), name='labresults_list'),
-    path('resultados/<int:id>', LabResultsView.as_view(), name='labresults_process'),
+    path('resultados/<int:id>/', LabResultsView.as_view(), name='labresults_process'),
 ]
+

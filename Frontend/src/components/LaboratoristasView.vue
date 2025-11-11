@@ -7,7 +7,7 @@
             <span>🧪</span>
           </div>
           <div class="card-title">
-            <h3>laboratorista</h3>
+            <h3>Laboratoristas</h3>
             <p>Buscar, editar o eliminar personal de laboratorio</p>
           </div>
         </div>
@@ -16,7 +16,7 @@
           <input
             type="text"
             v-model="searchQuery"
-            placeholder="Ingrese documento o código"
+            placeholder="Buscar por nombre, documento o código"
             class="search-input"
           />
           <button @click="refrescarLista" class="refresh-btn" :disabled="loading">
@@ -29,7 +29,7 @@
         </div>
 
         <div v-if="loading" class="loading-state">
-          <p>Cargando laboratorista...</p>
+          <p>Cargando laboratoristas...</p>
         </div>
 
         <div v-if="error" class="error-state">
@@ -38,34 +38,33 @@
         </div>
 
         <div v-if="!loading && !error" class="card-body ubicaciones-list">
-          <div v-if="laboratoristaFiltrados.length === 0" class="no-results">
+          <div v-if="laboratoristasFiltrados.length === 0" class="no-results">
             <p>
               {{ searchQuery
-                ? 'No se encontraron laboratorista que coincidan con la búsqueda'
-                : 'No hay laboratorista registrados' }}
+                ? 'No se encontraron laboratoristas que coincidan con la búsqueda'
+                : 'No hay laboratoristas registrados' }}
             </p>
           </div>
 
           <div v-else>
             <p class="results-count">
-              {{ laboratoristaFiltrados.length }} laboratorista(s) encontrado(s)
+              {{ laboratoristasFiltrados.length }} laboratorista(s) encontrado(s)
             </p>
             <div
-              v-for="laboratorista in laboratoristaFiltrados"
-              :key="laboratorista.id"
+              v-for="lab in laboratoristasFiltrados"
+              :key="lab.id"
               class="ubicacion-item"
             >
               <div class="ubicacion-info">
-                <p class="ubicacion-nombre">{{ laboratorista.nombre }} {{ laboratorista.apellido }}</p>
+                <p class="ubicacion-nombre">{{ lab.name }} {{ lab.lastname }}</p>
                 <p class="ubicacion-detalle">
-                  Código: {{ laboratorista.codigo }} – Documento: {{ laboratorista.documento }}
+                  Código: {{ lab.cod_int }} – Título: {{ lab.titulo }}
                 </p>
-                <p class="ubicacion-detalle">Cargo: {{ laboratorista.cargo }}</p>
-                <p class="ubicacion-telefono">📞 {{ laboratorista.telefono }}</p>
+                <p class="ubicacion-telefono">📞 {{ lab.telefono }}</p>
               </div>
               <div class="acciones">
-                <button class="edit-btn" @click.stop="abrirModalEditar(laboratorista)">EDITAR</button>
-                <button class="delete-btn" @click.stop="eliminarLaboratorista(laboratorista.id)">ELIMINAR</button>
+                <button class="edit-btn" @click.stop="abrirModalEditar(lab)">EDITAR</button>
+                <button class="delete-btn" @click.stop="eliminarLaboratorista(lab.id)">ELIMINAR</button>
               </div>
             </div>
           </div>
@@ -77,16 +76,14 @@
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
         <h3>Editar laboratorista</h3>
-        <label>Código</label>
-        <input v-model="laboratoristaEditando.codigo" />
-        <label>Documento</label>
-        <input v-model="laboratoristaEditando.documento" />
         <label>Nombre</label>
-        <input v-model="laboratoristaEditando.nombre" />
+        <input v-model="laboratoristaEditando.name" />
         <label>Apellido</label>
-        <input v-model="laboratoristaEditando.apellido" />
-        <label>Cargo</label>
-        <input v-model="laboratoristaEditando.cargo" />
+        <input v-model="laboratoristaEditando.lastname" />
+        <label>Código interno</label>
+        <input v-model="laboratoristaEditando.cod_int" />
+        <label>Título</label>
+        <input v-model="laboratoristaEditando.titulo" />
         <label>Teléfono</label>
         <input v-model="laboratoristaEditando.telefono" />
 
@@ -105,7 +102,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      laboratorista: [],
+      laboratoristas: [],
       searchQuery: '',
       loading: false,
       error: null,
@@ -114,98 +111,80 @@ export default {
     }
   },
   created() {
-    this.consultarlaboratorista()
+    this.consultarLaboratoristas()
   },
   computed: {
-    laboratoristaFiltrados() {
-      if (!this.searchQuery) return this.laboratorista
+    laboratoristasFiltrados() {
+      if (!this.searchQuery) return this.laboratoristas
       const q = this.searchQuery.toLowerCase()
-      return this.laboratorista.filter(r =>
-        r.nombre.toLowerCase().includes(q) ||
-        r.apellido.toLowerCase().includes(q) ||
-        r.codigo.toLowerCase().includes(q) ||
-        r.documento.toLowerCase().includes(q) ||
-        r.cargo.toLowerCase().includes(q) ||
-        r.telefono.includes(q)
+      return this.laboratoristas.filter(l =>
+        l.name.toLowerCase().includes(q) ||
+        l.lastname.toLowerCase().includes(q) ||
+        l.cod_int.toLowerCase().includes(q) ||
+        l.titulo.toLowerCase().includes(q)
       )
     }
   },
   methods: {
-    consultarlaboratorista() {
-
+    async consultarLaboratoristas() {
       this.loading = true
       this.error = null
-      axios.get('http://localhost:8080/api/laboratoristas/')
-        .then(r => {
-          if (!r.ok) throw new Error('Error en la respuesta del servidor')
-          return r.json()
-        })
-        .then(datos => {
-          if (Array.isArray(datos)) this.laboratorista = datos
-          else this.laboratorista = []
-        })
-        .catch(err => {
-          console.error(err)
-          this.error = 'Error al cargar los laboratorista'
-          this.laboratorista = []
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/laboratoristas/')
+        this.laboratoristas = response.data.laboratorists || []
+      } catch (err) {
+        console.error(err)
+        this.error = 'Error al cargar los laboratoristas'
+      } finally {
+        this.loading = false
+      }
     },
+
     refrescarLista() {
-      this.consultarlaboratorista()
+      this.consultarLaboratoristas()
     },
-    eliminarLaboratorista(id) {
+
+    async eliminarLaboratorista(id) {
       if (!confirm('¿Seguro que quieres eliminar este laboratorista?')) return
-      axios.delete(`http://localhost:8080/api/laboratoristas/borrar=${id}`)
-        .then(r => r.json())
-        .then(resp => {
-          if (resp.success === 1) {
-            alert('laboratorista eliminado correctamente')
-            this.consultarlaboratorista()
-          } else {
-            alert(resp.message || 'Error al eliminar laboratorista')
-          }
-        })
-        .catch(err => {
-          console.error('Error al eliminar:', err)
-          alert('Error al eliminar el laboratorista')
-        })
+      try {
+        await axios.delete(`http://127.0.0.1:8000/api/laboratoristas/${id}`)
+        alert('Laboratorista eliminado correctamente')
+        this.consultarLaboratoristas()
+      } catch (err) {
+        console.error(err)
+        alert('Error al eliminar el laboratorista')
+      }
     },
-    abrirModalEditar(laboratorista) {
-      this.laboratoristaEditando = { ...laboratorista }
+
+    abrirModalEditar(lab) {
+      this.laboratoristaEditando = { ...lab }
       this.mostrarModal = true
     },
+
     cerrarModal() {
       this.mostrarModal = false
       this.laboratoristaEditando = null
     },
-    guardarCambios() {
+
+    async guardarCambios() {
       if (!this.laboratoristaEditando) return
-      axios.post(`http://localhost/pacientes/laboratorista.php?actualizar=${this.laboratoristaEditando.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.laboratoristaEditando)
-      })
-        .then(r => r.json())
-        .then(resp => {
-          if (resp.success === 1) {
-            alert('laboratorista actualizado correctamente')
-            this.cerrarModal()
-            this.consultarlaboratorista()
-          } else {
-            alert(resp.message || 'Error al actualizar laboratorista')
-          }
-        })
-        .catch(err => {
-          console.error('Error al actualizar:', err)
-          alert('Error al actualizar el laboratorista')
-        })
+      try {
+        await axios.put(
+          `http://127.0.0.1:8000/api/laboratoristas/${this.laboratoristaEditando.id}`,
+          { body: JSON.stringify(this.laboratoristaEditando) }
+        )
+        alert('Laboratorista actualizado correctamente')
+        this.cerrarModal()
+        this.consultarLaboratoristas()
+      } catch (err) {
+        console.error(err)
+        alert('Error al actualizar el laboratorista')
+      }
     }
   }
 }
 </script>
+
 
 <style scoped>
 /* Mismos estilos que en PersonalView.vue/UbicacionesView.vue */

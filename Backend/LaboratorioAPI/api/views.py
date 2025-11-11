@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -6,168 +5,141 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Patient, Laboratorist, LabResults
 import json
 
-
-# ========================== PATIENT ==========================
-@method_decorator(csrf_exempt, name='dispatch')
+# ---------------- Patients ----------------
 class PatientView(View):
-    def get(self, request, id=0):
-        if id > 0:
-            patients = list(Patient.objects.filter(id=id).values())
-            if len(patients) > 0:
-                datos = {"Message": "Success", "patient": patients[0]}
-            else:
-                datos = {"Message": "Patient not found"}
+
+    def get(self, request, id=None):
+        if id:
+            try:
+                patient = Patient.objects.get(id=id)
+                data = {
+                    "id": patient.id,
+                    "name": patient.name,
+                    "lastname": patient.lastname,
+                    "documento": patient.documento,
+                    "cod_ing": patient.cod_ing,
+                    "direccion": patient.direccion,
+                    "telefono": patient.telefono
+                }
+                return JsonResponse(data, status=200)
+            except Patient.DoesNotExist:
+                return JsonResponse({"error": "Patient not found"}, status=404)
         else:
             patients = list(Patient.objects.values())
-            datos = {"Message": "Success", "patients": patients}
-        return JsonResponse(datos)
+            return JsonResponse(patients, safe=False, status=200)
 
     def post(self, request):
-        JsonData = json.loads(request.body)
-        JsonData = json.loads(JsonData["body"])
-        Patient.objects.create(
-            name=JsonData["name"],
-            lastname=JsonData["lastname"],
-            documento=JsonData["documento"],
-            cod_ing=JsonData["cod_ing"],
-            direccion=JsonData["direccion"],
-            telefono=JsonData["telefono"]
-        )
-        return JsonResponse({"Message": "Success"})
+        try:
+            data = json.loads(request.body)
+            patient = Patient.objects.create(**data)
+            return JsonResponse({"message": "Patient created", "id": patient.id}, status=201)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
 
     def put(self, request, id):
-        JsonData = json.loads(request.body)
-        JsonData = json.loads(JsonData["body"])
-        patients = list(Patient.objects.filter(id=id).values())
-        if len(patients) > 0:
+        try:
+            data = json.loads(request.body)
             patient = Patient.objects.get(id=id)
-            patient.name = JsonData["name"]
-            patient.lastname = JsonData["lastname"]
-            patient.documento = JsonData["documento"]
-            patient.cod_ing = JsonData["cod_ing"]
-            patient.direccion = JsonData["direccion"]
-            patient.telefono = JsonData["telefono"]
+            for field, value in data.items():
+                setattr(patient, field, value)
             patient.save()
-            datos = {"Message": "Success"}
-        else:
-            datos = {"Message": "Patient not found"}
-        return JsonResponse(datos)
+            return JsonResponse({"message": "Patient updated"}, status=200)
+        except Patient.DoesNotExist:
+            return JsonResponse({"error": "Patient not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
 
     def delete(self, request, id):
-        patients = list(Patient.objects.filter(id=id).values())
-        if len(patients) > 0:
-            Patient.objects.filter(id=id).delete()
-            datos = {"Message": "Success"}
-        else:
-            datos = {"Message": "Patient not found"}
-        return JsonResponse(datos)
+        try:
+            patient = Patient.objects.get(id=id)
+            patient.delete()
+            return JsonResponse({"message": "Patient deleted"}, status=200)
+        except Patient.DoesNotExist:
+            return JsonResponse({"error": "Patient not found"}, status=404)
 
 
-# ========================== LABORATORIST ==========================
+# ========================== LABORATORISTAS ==========================
 @method_decorator(csrf_exempt, name='dispatch')
 class LaboratoristView(View):
+
     def get(self, request, id=0):
         if id > 0:
             labs = list(Laboratorist.objects.filter(id=id).values())
             if len(labs) > 0:
-                datos = {"Message": "Success", "laboratorist": labs[0]}
+                datos = {"message": "Success", "laboratorist": labs[0]}
             else:
-                datos = {"Message": "Laboratorist not found"}
+                datos = {"message": "Laboratorist not found"}
         else:
             labs = list(Laboratorist.objects.values())
-            datos = {"Message": "Success", "laboratorists": labs}
-        return JsonResponse(datos)
+            datos = {"message": "Success", "laboratorists": labs}
+        return JsonResponse(datos, safe=False)
 
     def post(self, request):
-        JsonData = json.loads(request.body)
-        JsonData = json.loads(JsonData["body"])
-        Laboratorist.objects.create(
-            name=JsonData["name"],
-            lastname=JsonData["lastname"],
-            cod_int=JsonData["cod_int"],
-            titulo=JsonData["titulo"],
-            telefono=JsonData["telefono"]
-        )
-        return JsonResponse({"Message": "Success"})
+        try:
+            JsonData = json.loads(request.body)
+            Laboratorist.objects.create(
+                name=JsonData["name"],
+                lastname=JsonData["lastname"],
+                cod_int=JsonData["cod_int"],
+                titulo=JsonData["titulo"],
+                telefono=JsonData["telefono"]
+            )
+            return JsonResponse({"message": "Laboratorist created successfully"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
 
     def put(self, request, id):
-        JsonData = json.loads(request.body)
-        JsonData = json.loads(JsonData["body"])
-        labs = list(Laboratorist.objects.filter(id=id).values())
-        if len(labs) > 0:
-            lab = Laboratorist.objects.get(id=id)
-            lab.name = JsonData["name"]
-            lab.lastname = JsonData["lastname"]
-            lab.cod_int = JsonData["cod_int"]
-            lab.titulo = JsonData["titulo"]
-            lab.telefono = JsonData["telefono"]
-            lab.save()
-            datos = {"Message": "Success"}
-        else:
-            datos = {"Message": "Laboratorist not found"}
-        return JsonResponse(datos)
+        try:
+            JsonData = json.loads(request.body)
+            lab = Laboratorist.objects.filter(id=id).first()
+            if lab:
+                lab.name = JsonData["name"]
+                lab.lastname = JsonData["lastname"]
+                lab.cod_int = JsonData["cod_int"]
+                lab.titulo = JsonData["titulo"]
+                lab.telefono = JsonData["telefono"]
+                lab.save()
+                return JsonResponse({"message": "Laboratorist updated successfully"})
+            else:
+                return JsonResponse({"message": "Laboratorist not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
 
     def delete(self, request, id):
-        labs = list(Laboratorist.objects.filter(id=id).values())
-        if len(labs) > 0:
-            Laboratorist.objects.filter(id=id).delete()
-            datos = {"Message": "Success"}
+        lab = Laboratorist.objects.filter(id=id).first()
+        if lab:
+            lab.delete()
+            return JsonResponse({"message": "Laboratorist deleted successfully"})
         else:
-            datos = {"Message": "Laboratorist not found"}
-        return JsonResponse(datos)
+            return JsonResponse({"message": "Laboratorist not found"}, status=404)
 
-
-# ========================== LAB RESULTS ==========================
-@method_decorator(csrf_exempt, name='dispatch')
+# ---------------- Lab Results ----------------
 class LabResultsView(View):
-    def get(self, request, id=0):
-        if id > 0:
-            results = list(LabResults.objects.filter(id=id).values())
-            if len(results) > 0:
-                datos = {"Message": "Success", "labresult": results[0]}
-            else:
-                datos = {"Message": "Result not found"}
+
+    def get(self, request, id=None):
+        if id:
+            try:
+                result = LabResults.objects.get(id=id)
+                data = {
+                    "id": result.id,
+                    "cedula": result.cedula,
+                    "cod_ing_r": result.cod_ing_r,
+                    "col_tot": result.col_tot,
+                    "col_hdl": result.col_hdl,
+                    "col_ldl": result.col_ldl,
+                    "trig": result.trig
+                }
+                return JsonResponse(data, status=200)
+            except LabResults.DoesNotExist:
+                return JsonResponse({"error": "Lab result not found"}, status=404)
         else:
             results = list(LabResults.objects.values())
-            datos = {"Message": "Success", "labresults": results}
-        return JsonResponse(datos)
+            return JsonResponse(results, safe=False, status=200)
 
     def post(self, request):
-        JsonData = json.loads(request.body)
-        JsonData = json.loads(JsonData["body"])
-        LabResults.objects.create(
-            cod_ing_r=JsonData["cod_ing_r"],
-            col_tot=JsonData["col_tot"],
-            col_hdl=JsonData["col_hdl"],
-            col_ldl=JsonData["col_ldl"],
-            trig=JsonData["trig"]
-        )
-        return JsonResponse({"Message": "Success"})
-
-    def put(self, request, id):
-        JsonData = json.loads(request.body)
-        JsonData = json.loads(JsonData["body"])
-        results = list(LabResults.objects.filter(id=id).values())
-        if len(results) > 0:
-            result = LabResults.objects.get(id=id)
-            result.cod_ing_r = JsonData["cod_ing_r"]
-            result.col_tot = JsonData["col_tot"]
-            result.col_hdl = JsonData["col_hdl"]
-            result.col_ldl = JsonData["col_ldl"]
-            result.trig = JsonData["trig"]
-            result.save()
-            datos = {"Message": "Success"}
-        else:
-            datos = {"Message": "Result not found"}
-        return JsonResponse(datos)
-
-    def delete(self, request, id):
-        results = list(LabResults.objects.filter(id=id).values())
-        if len(results) > 0:
-            LabResults.objects.filter(id=id).delete()
-            datos = {"Message": "Success"}
-        else:
-            datos = {"Message": "Result not found"}
-        return JsonResponse(datos)
-
-# Create your views here.
+        try:
+            data = json.loads(request.body)
+            result = LabResults.objects.create(**data)
+            return JsonResponse({"message": "Lab result created", "id": result.id}, status=201)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
