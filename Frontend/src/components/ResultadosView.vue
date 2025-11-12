@@ -29,7 +29,7 @@
         </div>
 
         <div v-if="loading" class="loading-state">
-          <p>Cargando resultadoss...</p>
+          <p>Cargando resultados...</p>
         </div>
 
         <div v-if="error" class="error-state">
@@ -41,30 +41,30 @@
           <div v-if="resultadosFiltrados.length === 0" class="no-results">
             <p>
               {{ searchQuery
-                ? 'No se encontraron resultadoss que coincidan con la búsqueda'
-                : 'No hay resultadoss registrados' }}
+                ? 'No se encontraron resultados que coincidan con la búsqueda'
+                : 'No hay resultados registrados' }}
             </p>
           </div>
 
           <div v-else>
             <p class="results-count">
-              {{ resultadosFiltrados.length }} resultados(s) encontrado(s)
+              {{ resultadosFiltrados.length }} resultado(s) encontrado(s)
             </p>
             <div
-              v-for="resultados in resultadosFiltrados"
-              :key="resultados.id"
+              v-for="resultado in resultadosFiltrados"
+              :key="resultado.id"
               class="resultado-item"
             >
               <div class="resultado-info">
-                <p class="resultado-nombre"><strong>Codigo ingreso:</strong> {{ resultados.cod_ing_r }}</p>
-                <p class="resultado-detalle"><strong>Cedula:</strong> {{ resultados.cedula }} </p>
-                <p class="resultado-detalle"><strong>Colesterol Total:</strong> {{ resultados.col_tot }}</p>
-                <p class="resultado-detalle"><strong>Colesterol HDL:</strong> {{ resultados.col_hdl }}</p>
-                <p class="resultado-detalle"><strong>Colesterol LDL:</strong> {{ resultados.col_ldl }}</p>
+                <p class="resultado-nombre"><strong>Código ingreso:</strong> {{ resultado.cod_ing_r }}</p>
+                <p class="resultado-detalle"><strong>Cédula:</strong> {{ resultado.cedula }} </p>
+                <p class="resultado-detalle"><strong>Colesterol Total:</strong> {{ resultado.col_tot }}</p>
+                <p class="resultado-detalle"><strong>Colesterol HDL:</strong> {{ resultado.col_hdl }}</p>
+                <p class="resultado-detalle"><strong>Colesterol LDL:</strong> {{ resultado.col_ldl }}</p>
               </div>
               <div class="acciones">
-                <button class="edit-btn" @click.stop="abrirModalEditar(resultados)">EDITAR</button>
-                <button class="delete-btn" @click.stop="eliminarresultados(resultados.id)">ELIMINAR</button>
+                <button class="edit-btn" @click.stop="abrirModalEditar(resultado)">EDITAR</button>
+                <button class="delete-btn" @click.stop="eliminarResultado(resultado.id)">ELIMINAR</button>
               </div>
             </div>
           </div>
@@ -75,46 +75,22 @@
     <!-- Modal de edición -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>Editar resultados Médico</h3>
-        
-        <label>Código</label>
-        <input v-model="resultadosEditando.codigo" placeholder="Ej: EQ-001" />
-        
-        <label>Nombre del resultados</label>
-        <input v-model="resultadosEditando.nombre" placeholder="Ej: Monitor de Signos Vitales" />
-        
-        <label>Marca</label>
-        <input v-model="resultadosEditando.marca" placeholder="Ej: Philips" />
-        
-        <label>Modelo</label>
-        <input v-model="resultadosEditando.modelo" placeholder="Ej: IntelliVue MX40" />
-        
-        <label>Serial</label>
-        <input v-model="resultadosEditando.serial" placeholder="Ej: SN123456789" />
-        
-        <label>Ubicación</label>
-        <select v-model="resultadosEditando.resultado" required>
-          <option disabled value="">Seleccione una ubicación</option>
-          <option 
-            v-for="resultado in resultadoes" 
-            :key="resultado.id" 
-            :value="resultado.id"
-          >
-            {{ resultado.nombre }}
-          </option>
-        </select>
-        
-        <label>Responsable</label>
-        <select v-model="resultadosEditando.responsable" required>
-          <option disabled value="">Seleccione un responsable</option>
-          <option 
-            v-for="responsable in responsables" 
-            :key="responsable.id" 
-            :value="responsable.id"
-          >
-            {{ responsable.nombre }} {{ responsable.apellido }}
-          </option>
-        </select>
+        <h3>Editar Resultado Médico</h3>
+
+        <label>Código de ingreso</label>
+        <input v-model="resultadoEditando.cod_ing_r" />
+
+        <label>Cédula</label>
+        <input v-model="resultadoEditando.cedula" />
+
+        <label>Colesterol Total</label>
+        <input v-model="resultadoEditando.col_tot" type="number" />
+
+        <label>Colesterol HDL</label>
+        <input v-model="resultadoEditando.col_hdl" type="number" />
+
+        <label>Colesterol LDL</label>
+        <input v-model="resultadoEditando.col_ldl" type="number" />
 
         <div class="modal-buttons">
           <button @click="guardarCambios" class="save-btn">Guardar Cambios</button>
@@ -134,15 +110,11 @@ export default {
       loading: false,
       error: null,
       mostrarModal: false,
-      resultadosEditando: null,
-      resultadoes: [],
-      responsables: []
+      resultadoEditando: null
     }
   },
   created() {
     this.consultarResultados()
-    this.consultarresultadoes()
-    this.consultarResponsables()
   },
   computed: {
     resultadosFiltrados() {
@@ -172,26 +144,6 @@ export default {
       }
     },
 
-    async consultarresultadoes() {
-      try {
-        const res = await fetch('http://127.0.0.1:8000/api/pacientes/')
-        this.resultadoes = await res.json()
-      } catch (err) {
-        console.error('Error al cargar resultadoes:', err)
-        this.resultadoes = []
-      }
-    },
-
-    async consultarResponsables() {
-      try {
-        const res = await fetch('http://127.0.0.1:8000/api/laboratoristas/')
-        this.responsables = await res.json()
-      } catch (err) {
-        console.error('Error al cargar responsables:', err)
-        this.responsables = []
-      }
-    },
-
     refrescarLista() {
       this.consultarResultados()
     },
@@ -199,7 +151,7 @@ export default {
     async eliminarResultado(id) {
       if (!confirm('¿Seguro que quieres eliminar este resultado?')) return
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/labresults/${id}/`, {
+        const res = await fetch(`http://127.0.0.1:8000/api/resultados/${id}/`, {
           method: 'DELETE'
         })
         if (res.ok) {
@@ -214,22 +166,22 @@ export default {
       }
     },
 
-    abrirModalEditar(resultados) {
-      this.resultadosEditando = { ...resultados }
+    abrirModalEditar(resultado) {
+      this.resultadoEditando = { ...resultado }
       this.mostrarModal = true
     },
     cerrarModal() {
       this.mostrarModal = false
-      this.resultadosEditando = null
+      this.resultadoEditando = null
     },
 
     async guardarCambios() {
-      if (!this.resultadosEditando) return
+      if (!this.resultadoEditando) return
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/labresults/${this.resultadosEditando.id}/`, {
+        const res = await fetch(`http://127.0.0.1:8000/api/resultados/${this.resultadoEditando.id}/`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.resultadosEditando)
+          body: JSON.stringify(this.resultadoEditando)
         })
         if (res.ok) {
           alert('Resultado actualizado correctamente')
@@ -245,6 +197,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 /* === CONTENEDOR GENERAL === */

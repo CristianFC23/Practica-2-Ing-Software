@@ -6,6 +6,7 @@ from .models import Patient, Laboratorist, LabResults
 import json
 
 # ---------------- Patients ----------------
+@method_decorator(csrf_exempt, name='dispatch')
 class PatientView(View):
 
     def get(self, request, id=None):
@@ -58,7 +59,7 @@ class PatientView(View):
             return JsonResponse({"error": "Patient not found"}, status=404)
 
 
-# ========================== LABORATORISTAS ==========================
+# ---------------- Laboratorists ----------------
 @method_decorator(csrf_exempt, name='dispatch')
 class LaboratoristView(View):
 
@@ -113,10 +114,14 @@ class LaboratoristView(View):
         else:
             return JsonResponse({"message": "Laboratorist not found"}, status=404)
 
+
 # ---------------- Lab Results ----------------
+@method_decorator(csrf_exempt, name='dispatch')
 class LabResultsView(View):
 
     def get(self, request, id=None):
+        cedula = request.GET.get("cedula", None)
+
         if id:
             try:
                 result = LabResults.objects.get(id=id)
@@ -132,6 +137,14 @@ class LabResultsView(View):
                 return JsonResponse(data, status=200)
             except LabResults.DoesNotExist:
                 return JsonResponse({"error": "Lab result not found"}, status=404)
+
+        elif cedula:
+            results = list(LabResults.objects.filter(cedula=cedula).values())
+            if results:
+                return JsonResponse(results, safe=False, status=200)
+            else:
+                return JsonResponse({"message": "No results found for this cedula"}, status=404)
+
         else:
             results = list(LabResults.objects.values())
             return JsonResponse(results, safe=False, status=200)
@@ -143,3 +156,36 @@ class LabResultsView(View):
             return JsonResponse({"message": "Lab result created", "id": result.id}, status=201)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
+
+    def put(self, request, id):
+        try:
+            data = json.loads(request.body)
+            result = LabResults.objects.get(id=id)
+            for field, value in data.items():
+                setattr(result, field, value)
+            result.save()
+            return JsonResponse({"message": "Lab result updated"}, status=200)
+        except LabResults.DoesNotExist:
+            return JsonResponse({"error": "Lab result not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    def delete(self, request, id):
+        try:
+            result = LabResults.objects.get(id=id)
+            result.delete()
+            return JsonResponse({"message": "Lab result deleted"}, status=200)
+        except LabResults.DoesNotExist:
+            return JsonResponse({"error": "Lab result not found"}, status=404)
+
+
+# ---------------- Dashboard Counts ----------------
+@method_decorator(csrf_exempt, name='dispatch')
+class DashboardCountsView(View):
+    def get(self, request):
+        counts = {
+            "pacientes": Patient.objects.count(),
+            "laboratoristas": Laboratorist.objects.count(),
+            "resultados": LabResults.objects.count()
+        }
+        return JsonResponse(counts, safe=False, status=200)

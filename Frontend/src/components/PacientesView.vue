@@ -48,6 +48,37 @@
             </p>
           </div>
 
+          <div
+              v-if="pacienteSeleccionado && resultados[pacienteSeleccionado]"
+              class="resultados-container"
+            >
+              <h4>Resultados de laboratorio</h4>
+              
+              <ul>
+                <li
+                  v-for="(r, index) in resultados[pacienteSeleccionado]"
+                  :key="index"
+                  class="resultado-item"
+                >
+                  <strong>Código ingreso:</strong> {{ r.cod_ing_r }}<br />
+                  <strong>Total:</strong> {{ r.col_tot }} |
+                  <strong>HDL:</strong> {{ r.col_hdl }} |
+                  <strong>LDL:</strong> {{ r.col_ldl }} |
+                  <strong>Triglicéridos:</strong> {{ r.trig }}
+                </li>
+              </ul>
+              <p v-if="resultados[pacienteSeleccionado].length === 0">
+                No hay resultados registrados.
+              </p>
+
+              <!-- ✅ Botón debajo -->
+              <div style="text-align: center; margin-top: 15px;">
+                <button class="results-btn" @click="pacienteSeleccionado = null">
+                  OCULTAR RESULTADOS
+                </button>
+              </div>
+            </div>
+
           <div v-else>
             <p class="results-count">
               {{ pacientesFiltrados.length }} paciente(s) encontrado(s)
@@ -63,7 +94,10 @@
                   {{ paciente.name }} {{ paciente.lastname }}
                 </p>
                 <p class="paciente-detalle">
-                  Código ingreso: {{ paciente.cod_ing }} – Cédula: {{ paciente.documento }}
+                  Cédula: {{ paciente.documento }}
+                </p>
+                <p class="paciente-detalle">
+                  Dirección: {{ paciente.direccion }}
                 </p>
                 <p class="paciente-telefono">📞 {{ paciente.telefono }}</p>
               </div>
@@ -75,33 +109,33 @@
                 <button class="delete-btn" @click.stop="eliminarPaciente(paciente.id)">
                   ELIMINAR
                 </button>
+                <button class="results-btn" @click="toggleResultados(paciente)">
+                  {{ pacienteSeleccionado === paciente.id ? "OCULTAR" : "VER RESULTADOS" }}
+                </button>
               </div>
             </div>
+
+            <!-- 🔽 Ventana de resultados del paciente -->
+            
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal de edición -->
+    <!-- 🟩 Modal de edición -->
     <div v-if="mostrarModal" class="modal-overlay">
       <div class="modal-content">
         <h3>Editar Paciente</h3>
-
         <label>Nombre</label>
         <input v-model="pacienteEditando.name" />
-
         <label>Apellido</label>
         <input v-model="pacienteEditando.lastname" />
-
         <label>Documento</label>
         <input v-model="pacienteEditando.documento" />
-
         <label>Código de Ingreso</label>
         <input v-model="pacienteEditando.cod_ing" />
-
         <label>Dirección</label>
         <input v-model="pacienteEditando.direccion" />
-
         <label>Teléfono</label>
         <input v-model="pacienteEditando.telefono" />
 
@@ -116,24 +150,24 @@
 
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
       pacientes: [],
+      resultados: {},
+      pacienteSeleccionado: null,
       searchQuery: "",
       loading: false,
       error: null,
       mostrarModal: false,
       pacienteEditando: null,
       apiUrl: "http://localhost:8000/api/pacientes/",
+      resultadosUrl: "http://localhost:8000/api/resultados/",
     };
   },
-
   created() {
     this.consultarPacientes();
   },
-
   computed: {
     pacientesFiltrados() {
       if (!this.searchQuery) return this.pacientes;
@@ -148,9 +182,7 @@ export default {
       );
     },
   },
-
   methods: {
-    // 🔹 Consultar lista de pacientes
     async consultarPacientes() {
       this.loading = true;
       this.error = null;
@@ -158,31 +190,24 @@ export default {
         const response = await axios.get(this.apiUrl);
         this.pacientes = Array.isArray(response.data) ? response.data : [];
       } catch (err) {
-        console.error("Error al cargar pacientes:", err);
         this.error = "No se pudo cargar la lista de pacientes.";
       } finally {
         this.loading = false;
       }
     },
-
     refrescarLista() {
       this.consultarPacientes();
     },
-
-    // 🔹 Eliminar paciente
     async eliminarPaciente(id) {
       if (!confirm("¿Seguro que quieres eliminar este paciente?")) return;
       try {
         await axios.delete(`${this.apiUrl}${id}/`);
         alert("Paciente eliminado correctamente");
         this.consultarPacientes();
-      } catch (err) {
-        console.error("Error al eliminar paciente:", err);
+      } catch {
         alert("Error al eliminar el paciente");
       }
     },
-
-    // 🔹 Modal de edición
     abrirModalEditar(paciente) {
       this.pacienteEditando = { ...paciente };
       this.mostrarModal = true;
@@ -191,10 +216,7 @@ export default {
       this.mostrarModal = false;
       this.pacienteEditando = null;
     },
-
-    // 🔹 Guardar cambios (PUT)
     async guardarCambios() {
-      if (!this.pacienteEditando) return;
       try {
         await axios.put(
           `${this.apiUrl}${this.pacienteEditando.id}/`,
@@ -203,16 +225,66 @@ export default {
         alert("Paciente actualizado correctamente");
         this.cerrarModal();
         this.consultarPacientes();
-      } catch (err) {
-        console.error("Error al actualizar paciente:", err);
+      } catch {
         alert("Error al actualizar el paciente");
+      }
+    },
+    async toggleResultados(paciente) {
+      if (this.pacienteSeleccionado === paciente.id) {
+        this.pacienteSeleccionado = null;
+      } else {
+        this.pacienteSeleccionado = paciente.id;
+        if (!this.resultados[paciente.id]) {
+          try {
+            const res = await axios.get(`${this.resultadosUrl}?cedula=${paciente.documento}`);
+            this.resultados[paciente.id] = res.data;
+          } catch {
+            this.resultados[paciente.id] = [];
+          }
+        }
       }
     },
   },
 };
 </script>
 
+
+
 <style scoped>
+/* === Contenedor general y estilos se mantienen igual === */
+
+/* 🔽 Resultados desplegables */
+.resultados-container {
+  margin: 10px 0 20px 0;
+  padding: 15px;
+  background: #fffdf6;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.resultado-item {
+  padding: 6px 0;
+  font-size: 13px;
+  color: #2c3e50;
+  border-bottom: 1px dashed #ddd;
+}
+.resultado-item:last-child {
+  border-bottom: none;
+}
+
+.results-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.results-btn:hover {
+  background: #2980b9;
+}
+
 /* === Contenedor general === */
 .page-container {
   display: flex;

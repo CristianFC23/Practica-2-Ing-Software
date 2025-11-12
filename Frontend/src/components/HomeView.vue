@@ -12,11 +12,11 @@
         </div>
       </div>
       <div class="card-body">
-        <h2 class="cantidad">Cantidad</h2>
+        <h2 class="cantidad">{{ counts.pacientes }}</h2>
         <p class="total">TOTAL</p>
       </div>
       <div class="card-actions">
-        <router-link to="/pacientes" class="btn-primary">+ Nuevo</router-link>
+        <router-link to="/paciente/nuevo/" class="btn-primary">+ Nuevo</router-link>
         <router-link to="/pacientes" class="btn-secondary">Ver Todos</router-link>
       </div>
     </div>
@@ -31,11 +31,11 @@
         </div>
       </div>
       <div class="card-body">
-        <h2 class="cantidad">Cantidad</h2>
+        <h2 class="cantidad">{{ counts.laboratoristas }}</h2>
         <p class="total">TOTAL</p>
       </div>
       <div class="card-actions">
-        <router-link to="/laboratoristas" class="btn-primary">+ Nuevo</router-link>
+        <router-link to="/laboratorista/nuevo" class="btn-primary">+ Nuevo</router-link>
         <router-link to="/laboratoristas" class="btn-secondary">Ver Todos</router-link>
       </div>
     </div>
@@ -50,24 +50,48 @@
         </div>
       </div>
       <div class="card-body">
-        <label class="label">Documento de Identificación</label>
-        <div class="input-group">
-          <input type="text" placeholder="Ej: 12345678" class="input" />
-          <button class="btn-primary">Buscar</button>
-        </div>
+        <h2 class="cantidad">{{ counts.resultados }}</h2>
+        <p class="total">TOTAL</p>
+      </div>
+      <div class="card-actions">
+        <router-link to="/resultados/nuevo" class="btn-primary">+ Nuevo</router-link>
+        <router-link to="/resultados" class="btn-secondary">Ver Todos</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "HomeView",
+  data() {
+    return {
+      counts: {
+        pacientes: 0,
+        laboratoristas: 0,
+        resultados: 0,
+      },
+    };
+  },
+  methods: {
+    async fetchCounts() {
+      try {
+        const response = await axios.get("http://localhost:8000/api/dashboard/counts/");
+        this.counts = response.data;
+      } catch (error) {
+        console.error("Error al obtener los conteos:", error);
+      }
+    },
+  },
+  mounted() {
+    this.fetchCounts();
+  },
 };
 </script>
 
 <style scoped>
-/* --- CONTENEDOR PRINCIPAL --- */
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -85,7 +109,6 @@ export default {
   margin-bottom: 10px;
 }
 
-/* --- TARJETAS --- */
 .dashboard-card {
   background: #ffffff;
   border-radius: 16px;
@@ -160,7 +183,6 @@ export default {
   font-size: 14px;
 }
 
-/* --- BOTONES --- */
 .card-actions {
   display: flex;
   gap: 10px;
@@ -196,7 +218,6 @@ export default {
   background: #e5e7eb;
 }
 
-/* --- INPUTS --- */
 .label {
   font-size: 14px;
   font-weight: 500;
@@ -225,7 +246,6 @@ export default {
   border-radius: 0 8px 8px 0;
 }
 
-/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 10px;

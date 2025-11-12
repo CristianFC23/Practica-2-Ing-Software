@@ -8,7 +8,7 @@
 # ]
 
 from django.urls import path
-from .views import PatientView, LaboratoristView, LabResultsView
+from .views import PatientView, LaboratoristView, LabResultsView, DashboardCountsView
 
 urlpatterns = [
     # Pacientes
@@ -22,5 +22,8 @@ urlpatterns = [
     # Resultados de laboratorio
     path('resultados/', LabResultsView.as_view(), name='labresults_list'),
     path('resultados/<int:id>/', LabResultsView.as_view(), name='labresults_process'),
+
+    # Dashboard
+    path('dashboard/counts/', DashboardCountsView.as_view(), name='dashboard_counts'),
 ]
 
