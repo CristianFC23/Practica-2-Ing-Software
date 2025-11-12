@@ -1,201 +1,181 @@
 <template>
   <div id="app">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <img src="@/assets/logo.png" alt="Logo" class="logo" />
-        <div class="company-info">
-          <h1 class="company-name">Fedora INC</h1>
-          <p class="system-name">Sistema de gestión hospitalaria</p>
+    <!-- Contenedor principal con sidebar y contenido -->
+    <div class="app-layout">
+      <!-- 🔸 Sidebar lateral fijo -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <!-- Ícono personalizado -->
+          <img src="@/assets/logo.png" alt="Logo Fedora" class="sidebar-logo" />
         </div>
-      </div>
+        <nav class="sidebar-menu">
+          <router-link to="/" class="menu-item">
+            🏠 Home
+          </router-link>
+          <router-link to="/pacientes" class="menu-item">
+            😷 Pacientes
+          </router-link>
+          <router-link to="/laboratoristas" class="menu-item">
+            🧪 Laboratoristas
+          </router-link>
+          <router-link to="/resultados" class="menu-item">
+            📊 Resultados
+          </router-link>
 
-      <nav class="header-nav">
-        <router-link to="/">Home</router-link>
-        <router-link to="/pacientes">Pacientes</router-link>
-        <router-link to="/laboratoristas">Laboratoristas</router-link>
-        <router-link to="/resultados">Resultados</router-link>
-      </nav>
-    </header>
+        </nav>
+      </aside>
 
-    <!-- Contenedor para las vistas -->
-    <main class="main-container">
-      <router-view />
-    </main>
+      <!-- 🔹 Contenido dinámico (todas las vistas) -->
+      <main class="main-content">
+        <router-view />
+      </main>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HospitalHome'
+  name: "App",
 };
 </script>
 
 <style>
 /* --- RESET GLOBAL --- */
-html, body, #app {
+html,
+body,
+#app {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* --- Layout general --- */
-#app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  width: 100vw;
+  font-family: "Inter", sans-serif;
   background: linear-gradient(135deg, #7e5bef 0%, #10b981 100%);
   background-attachment: fixed;
-  font-family: 'Inter', sans-serif;
-  color: #1f2937;
   overflow: hidden;
 }
 
-/* --- Header --- */
-.header {
-  backdrop-filter: blur(15px);
-  background: rgba(255, 255, 255, 0.25);
-  color: #f9fafb;
-  padding: 16px 24px;
+/* --- LAYOUT PRINCIPAL --- */
+.app-layout {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  height: 70px;
-  border-radius: 0 0 16px 16px;
+  height: 100vh;
+  width: 100vw;
 }
 
-/* --- Logo e información --- */
-.header-left {
+/* --- SIDEBAR --- */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #f8d57e 0%, #ffffff 100%);
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* --- HEADER DEL SIDEBAR --- */
+.sidebar-header {
   display: flex;
   align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.sidebar-icon {
+  font-size: 24px;
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #444;
+  margin: 0;
+}
+
+/* --- MENÚ DEL SIDEBAR --- */
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.logo {
-  height: 45px;
-  width: auto;
-  border-radius: 10px;
-}
-
-.company-info {
+.menu-item {
   display: flex;
-  flex-direction: column;
-}
-
-.company-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0;
-}
-
-.system-name {
-  font-size: 13px;
-  font-weight: 400;
-  color: #f3f4f6;
-  opacity: 0.9;
-  margin: 0;
-}
-
-/* --- Navegación --- */
-.header-nav {
-  display: flex;
-  gap: 16px;
-}
-
-.header-nav a {
-  color: #f9fafb;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
   text-decoration: none;
+  font-weight: 500;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateX(4px);
+}
+
+.menu-item.active {
+  background: #f4c542;
+  color: #fff;
   font-weight: 600;
-  font-size: 14px;
-  padding: 8px 14px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(244, 197, 66, 0.4);
 }
 
-.header-nav a:hover {
-  background: rgba(255, 255, 255, 0.2);
+.menu-icon {
+  font-size: 18px;
 }
 
-.header-nav a.router-link-exact-active {
-  background: #10b981;
-  color: white;
-}
-
-/* --- Contenedor principal (router-view) --- */
-.main-container {
-  flex: 1;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: start;
-}
-
-/* --- Responsividad --- */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    height: auto;
-    padding: 12px 16px;
-  }
-
-  .header-left {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .company-name {
-    font-size: 16px;
-  }
-
-  .system-name {
-    font-size: 12px;
-  }
-
-  .header-nav {
-    width: 100%;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-
-  .header-nav a {
-    font-size: 13px;
-    padding: 6px 10px;
-  }
-}
-
-/* --- Scroll para listas grandes en tarjetas --- */
-.ubicaciones-list,
-.resultados-list,
-.laboratoristas-list {
-  max-height: 60vh;
+/* --- CONTENIDO PRINCIPAL --- */
+.main-content {
+  margin-left: 250px; /* mismo ancho del sidebar */
+  padding: 30px;
+  width: calc(100vw - 250px);
+  height: 100vh;
   overflow-y: auto;
-  padding-right: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-top-left-radius: 16px;
 }
 
-.ubicaciones-list::-webkit-scrollbar,
-.resultados-list::-webkit-scrollbar,
-.laboratoristas-list::-webkit-scrollbar {
+/* --- SCROLL SUAVE EN CONTENIDO --- */
+.main-content::-webkit-scrollbar {
   width: 8px;
 }
-
-.ubicaciones-list::-webkit-scrollbar-thumb,
-.resultados-list::-webkit-scrollbar-thumb,
-.laboratoristas-list::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.3);
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+    padding: 16px;
+  }
+
+  .main-content {
+    margin-left: 200px;
+    padding: 20px;
+  }
+}
+.sidebar-logo {
+  width: 80%;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
 </style>

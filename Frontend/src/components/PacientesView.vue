@@ -213,16 +213,18 @@ export default {
 </script>
 
 <style scoped>
-/* ✅ Se conservan exactamente tus estilos originales */
+/* === Contenedor general === */
 .page-container {
   display: flex;
   justify-content: center;
-  align-items: first baseline;
-  min-height: 100vh;
+  align-items: flex-start;
+  height: 100vh;
+  overflow: hidden;
+  padding: 0;
   background: none;
-  padding: 20px;
 }
 
+/* === Tarjetas del Dashboard === */
 .dashboard-cards {
   display: grid;
   grid-template-columns: 1fr;
@@ -254,10 +256,7 @@ export default {
   justify-content: center;
   font-size: 22px;
   margin-right: 15px;
-}
-
-.pacientes-icon {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
 }
 
@@ -275,12 +274,9 @@ export default {
   line-height: 1.4;
 }
 
-.card-body {
-  margin-bottom: 20px;
-}
-
+/* === Buscador y botones === */
 .search-input {
-  width: 100%;
+  width: 95%;
   padding: 12px;
   border: 1px solid #dee2e6;
   border-radius: 8px;
@@ -290,18 +286,18 @@ export default {
 }
 
 .search-input:focus {
-  border-color: #667eea;
+  border-color: #C6A34F;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 0 2px rgba(198, 163, 79, 0.3);
 }
 
 .refresh-btn,
 .retry-btn {
   padding: 8px 16px;
-  border: 1px solid #667eea;
+  border: 1px solid #C6A34F;
   border-radius: 6px;
   background: white;
-  color: #667eea;
+  color: #C6A34F;
   cursor: pointer;
   font-size: 13px;
   transition: all 0.2s ease;
@@ -309,7 +305,7 @@ export default {
 
 .refresh-btn:hover,
 .retry-btn:hover {
-  background: #667eea;
+  background: #C6A34F;
   color: white;
 }
 
@@ -318,6 +314,7 @@ export default {
   cursor: not-allowed;
 }
 
+/* === Estados === */
 .loading-state,
 .error-state {
   text-align: center;
@@ -329,15 +326,32 @@ export default {
   color: #e74c3c;
 }
 
+/* === Lista scrollable === */
 .pacientes-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
+/* Scrollbar consistente con ResultadosView.vue */
+.pacientes-list::-webkit-scrollbar {
+  width: 8px;
+}
+.pacientes-list::-webkit-scrollbar-thumb {
+  background: rgba(198, 163, 79, 0.4);
+  border-radius: 4px;
+}
+.pacientes-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(198, 163, 79, 0.7);
+}
+
+/* === Elementos de la lista === */
 .results-count {
   font-size: 12px;
-  color: #667eea;
+  color: #C6A34F;
   margin-bottom: 15px;
   font-weight: 500;
 }
@@ -352,15 +366,15 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8f9fa;
+  background: #fffdf6;
   border-radius: 10px;
   padding: 15px;
   transition: all 0.3s ease;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #C6A34F;
 }
 
 .paciente-item:hover {
-  background: #e9ecef;
+  background: #f0f0f0;
   transform: translateX(5px);
 }
 
@@ -383,13 +397,14 @@ export default {
 
 .paciente-telefono {
   font-size: 12px;
-  color: #667eea;
+  color: #C6A34F;
   margin: 0;
   font-weight: 500;
 }
 
+/* === Botones de acción === */
 .edit-btn {
-  background: #3498db;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
   border: none;
   padding: 6px 12px;
@@ -400,7 +415,7 @@ export default {
 }
 
 .edit-btn:hover {
-  background: #2980b9;
+  background: linear-gradient(135deg, #d8b45f, #a8883a);
 }
 
 .delete-btn {
@@ -417,6 +432,7 @@ export default {
   background: #c0392b;
 }
 
+/* === Modal === */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -431,7 +447,7 @@ export default {
 }
 
 .modal-content {
-  background: #fff;
+  background: #fffef5;
   padding: 20px;
   border-radius: 12px;
   width: 350px;
@@ -465,6 +481,20 @@ export default {
   gap: 8px;
 }
 
+.cancel-btn {
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.cancel-btn:hover {
+  background: #7f8c8d;
+}
+
 .save-btn {
   background: #3498db;
   color: white;
@@ -475,16 +505,11 @@ export default {
   font-size: 12px;
 }
 
-.cancel-btn {
-  background: #bdc3c7;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
+.save-btn:hover {
+  background: #2980b9;
 }
 
+/* === Botones generales === */
 .btn {
   flex: 1;
   padding: 10px 14px;
@@ -496,14 +521,14 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
-  align-items:center;
+  align-items: center;
   justify-content: center;
   gap: 6px;
   text-decoration: none;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
 }
 </style>

@@ -185,36 +185,39 @@ export default {
 }
 </script>
 
-
 <style scoped>
-/* Mismos estilos que en PersonalView.vue/UbicacionesView.vue */
+/* Mismos estilos que en PersonalView.vue/UbicacionesView.vue (paleta dorada unificada) */
 .page-container {
   display: flex;
   justify-content: center;
-  align-items: first baseline;
-  min-height: 100vh;
-  /* background: #f5f7fa; */
+  align-items: flex-start;
+  height: 100vh;        /* fuerza altura exacta, no más */
+  overflow: hidden;     /* evita scroll global */
+  padding: 0;           /* quita padding que hacía desbordar el alto */
   background: none;
-  padding: 20px;
 }
+
 .dashboard-cards {
   display: grid;
   grid-template-columns: 1fr;
   max-width: 600px;
   width: 100%;
 }
+
 .card {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 16px;
   padding: 25px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e8ecf0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9d8a6; /* borde suave dorado */
 }
+
 .card-header {
   display: flex;
   align-items: flex-start;
   margin-bottom: 20px;
 }
+
 .card-icon {
   width: 50px;
   height: 50px;
@@ -225,10 +228,13 @@ export default {
   font-size: 22px;
   margin-right: 15px;
 }
+
+/* Icono con degradado dorado */
 .ubicaciones-icon {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #fff;
 }
+
 .card-title h3 {
   font-size: 18px;
   font-weight: 600;
@@ -241,36 +247,43 @@ export default {
   margin: 0;
   line-height: 1.4;
 }
+
+/* Input buscador */
 .search-input {
-  width: 100%;
+  width: 95%;
   padding: 12px;
-  border: 1px solid #dee2e6;
+  border: 1px solid #C6A34F;
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.2s ease;
   margin-bottom: 10px;
+  background: #fffdf6;
 }
 .search-input:focus {
-  border-color: #667eea;
+  border-color: #A3822F;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 0 2px rgba(198, 163, 79, 0.2);
 }
+
+/* Botones refrescar / reintentar */
 .refresh-btn,
 .retry-btn {
   padding: 8px 16px;
-  border: 1px solid #667eea;
+  border: 1px solid #C6A34F;
   border-radius: 6px;
   background: white;
-  color: #667eea;
+  color: #A3822F;
   cursor: pointer;
   font-size: 13px;
   transition: all 0.2s ease;
 }
 .refresh-btn:hover,
 .retry-btn:hover {
-  background: #667eea;
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #fff;
 }
+
+/* Estados */
 .loading-state,
 .error-state {
   text-align: center;
@@ -280,36 +293,62 @@ export default {
 .error-state {
   color: #e74c3c;
 }
+
+/* === Lista (misma clase) === */
 .ubicaciones-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
 }
+
+/* Scrollbar dorado */
+.ubicaciones-list::-webkit-scrollbar {
+  width: 8px;
+}
+.ubicaciones-list::-webkit-scrollbar-thumb {
+  background: #C6A34F;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.ubicaciones-list::-webkit-scrollbar-thumb:hover {
+  background: #A3822F;
+}
+
+/* Results count accent */
 .results-count {
   font-size: 12px;
-  color: #667eea;
+  color: #A3822F;
   margin-bottom: 15px;
   font-weight: 500;
 }
+
 .no-results {
   text-align: center;
   padding: 30px;
   color: #7f8c8d;
 }
+
+/* Item */
 .ubicacion-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8f9fa;
+  background: #fffdf6;
   border-radius: 10px;
   padding: 15px;
   transition: all 0.3s ease;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #C6A34F;
 }
 .ubicacion-item:hover {
-  background: #e9ecef;
+  background: #fff8e6;
   transform: translateX(5px);
 }
+
 .ubicacion-info {
   flex: 1;
 }
@@ -326,13 +365,15 @@ export default {
 }
 .ubicacion-telefono {
   font-size: 12px;
-  color: #667eea;
+  color: #A3822F;
   margin: 0;
   font-weight: 500;
 }
+
+/* Botones de acción */
 .edit-btn {
-  background: #3498db;
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #fff;
   border: none;
   padding: 6px 12px;
   border-radius: 6px;
@@ -341,8 +382,9 @@ export default {
   margin-right: 6px;
 }
 .edit-btn:hover {
-  background: #2980b9;
+  background: linear-gradient(135deg, #d8b45f, #a8883a);
 }
+
 .delete-btn {
   background: #e74c3c;
   color: white;
@@ -355,6 +397,7 @@ export default {
 .delete-btn:hover {
   background: #c0392b;
 }
+
 /* Modal */
 .modal-overlay {
   position: fixed;
@@ -369,15 +412,16 @@ export default {
   z-index: 9999;
 }
 .modal-content {
-  background: #fff;
+  background: #fffef5;
   padding: 20px;
   border-radius: 12px;
   width: 350px;
   max-width: 90%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 .modal-content h3 {
   margin-top: 0;
+  color: #4b3d09;
 }
 .modal-content label {
   font-size: 13px;
@@ -389,7 +433,7 @@ export default {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
-  border: 1px solid #dee2e6;
+  border: 1px solid #C6A34F;
   border-radius: 6px;
 }
 .modal-buttons {
@@ -411,7 +455,7 @@ export default {
   background: #7f8c8d;
 }
 .save-btn {
-  background: #3498db;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
   border: none;
   padding: 6px 12px;
@@ -420,9 +464,10 @@ export default {
   font-size: 12px;
 }
 .save-btn:hover {
-  background: #2980b9;
+  background: linear-gradient(135deg, #d8b45f, #a8883a);
 }
 
+/* Botón principal */
 .btn {
   flex: 1;
   padding: 10px 14px;
@@ -439,9 +484,8 @@ export default {
   gap: 6px;
   text-decoration: none;
 }
-
 .btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
 }
 </style>

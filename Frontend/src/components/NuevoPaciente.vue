@@ -92,16 +92,17 @@ export default {
 </script>
 
 <style scoped>
-/* Igual estilo de NuevoUbicacion.vue */
+/* === CONTENEDOR GENERAL === */
 .page-container {
   display: flex;
   justify-content: center;
   align-items: first baseline;
   min-height: 100vh;
-  /* background: #f5f7fa; */
   padding: 20px;
+  background: none;
 }
 
+/* === TARJETA PRINCIPAL === */
 .dashboard-cards {
   display: grid;
   grid-template-columns: 1fr;
@@ -110,13 +111,19 @@ export default {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 16px;
   padding: 25px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e8ecf0;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(198, 163, 79, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.1);
 }
 
+/* === HEADER === */
 .card-header {
   display: flex;
   align-items: flex-start;
@@ -131,49 +138,110 @@ export default {
   justify-content: center;
   font-size: 22px;
   margin-right: 15px;
-}
-.ubicaciones-icon {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(163, 130, 47, 0.15);
 }
 .card-title h3 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 5px 0;
-  color: #2c3e50;
+  color: #3b341b;
 }
 .card-title p {
-  font-size: 14px;
-  color: #7f8c8d;
+  font-size: 13px;
+  color: #8a6d2f;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
 }
+
+/* === CAMPOS DEL FORMULARIO === */
 .card-body label {
-  font-size: 15px;
-  font-weight: bold;
-  color: #000000;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b3d09;
+  margin-top: 12px;
+  margin-bottom: 6px;
   display: block;
 }
-.card-body input {
-  width: 100%;
+.card-body input,
+.card-body select,
+.card-body textarea {
+  width: 95%;
   padding: 12px;
-  border: 1px solid #dee2e6;
+  border: 1px solid rgba(198, 163, 79, 0.25);
   border-radius: 8px;
   font-size: 14px;
   margin-bottom: 10px;
+  background: #fffef8;
+  color: #2c3e50;
+  transition: all 0.2s ease;
 }
+.card-body input:focus,
+.card-body select:focus,
+.card-body textarea:focus {
+  border-color: #A3822F;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(198, 163, 79, 0.18);
+}
+
+/* === BOTONES === */
 .save-btn {
-  background: #3498db;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 18px rgba(163, 130, 47, 0.12);
 }
 .save-btn:hover {
-  background: #2980b9;
+  background: linear-gradient(135deg, #EDC94F, #C6A34F);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(163, 130, 47, 0.18);
+}
+.save-btn:active {
+  transform: translateY(0);
+}
+
+.cancel-btn {
+  background: transparent;
+  color: #4b3d09;
+  border: 1px solid rgba(163, 130, 47, 0.25);
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 8px;
+}
+.cancel-btn:hover {
+  background: rgba(198, 163, 79, 0.06);
+}
+
+/* === BOTONES AGRUPADOS === */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 520px) {
+  .card {
+    padding: 18px;
+  }
+  .card-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .save-btn,
+  .cancel-btn {
+    font-size: 13px;
+    padding: 9px 14px;
+  }
 }
 </style>

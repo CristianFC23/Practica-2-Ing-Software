@@ -247,34 +247,40 @@ export default {
 </script>
 
 <style scoped>
-/* Copiar estilos de PersonalView.vue */
+/* === CONTENEDOR GENERAL === */
 .page-container {
   display: flex;
   justify-content: center;
-  align-items: first baseline;
-  min-height: 100vh;
-  /* background: #f5f7fa; */
+  align-items: flex-start;
+  height: 100vh;
+  overflow: hidden;
+  padding: 0;
   background: none;
-  padding: 20px;
 }
+
 .dashboard-cards {
   display: grid;
   grid-template-columns: 1fr;
   max-width: 600px;
   width: 100%;
 }
+
+/* === TARJETAS === */
 .card {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e8ecf0;
+  border: 1px solid #C6A34F; /* cambiado a paleta base */
+  transition: all 0.3s ease;
 }
+
 .card-header {
   display: flex;
   align-items: flex-start;
   margin-bottom: 20px;
 }
+
 .card-icon {
   width: 50px;
   height: 50px;
@@ -285,124 +291,169 @@ export default {
   font-size: 22px;
   margin-right: 15px;
 }
+
+/* icono con degradado paleta base */
 .resultadoes-icon {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #2c3e50;
 }
+
 .card-title h3 {
   font-size: 18px;
   font-weight: 600;
   margin: 0 0 5px 0;
   color: #2c3e50;
 }
+
 .card-title p {
   font-size: 14px;
   color: #7f8c8d;
   margin: 0;
   line-height: 1.4;
 }
+
+/* === INPUT DE BÚSQUEDA === */
 .search-input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #dee2e6;
+  border: 1px solid #e6d79a; /* suave acorde a paleta */
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.2s ease;
   margin-bottom: 10px;
 }
+
 .search-input:focus {
-  border-color: #667eea;
+  border-color: #A3822F;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 0 2px rgba(163, 130, 47, 0.18);
 }
+
+/* === BOTONES === */
 .refresh-btn,
 .retry-btn {
   padding: 8px 16px;
-  border: 1px solid #667eea;
+  border: 1px solid #A3822F;
   border-radius: 6px;
   background: white;
-  color: #667eea;
+  color: #A3822F;
   cursor: pointer;
   font-size: 13px;
-  transition: all 0.2s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 .refresh-btn:hover,
 .retry-btn:hover {
-  background: #667eea;
-  color: white;
+  background: #C6A34F;
+  color: #2c3e50;
 }
+
+/* === ESTADOS === */
 .loading-state,
 .error-state {
   text-align: center;
   padding: 20px;
-  color: #7f8c8d;
+  color: #8a6d2f;
 }
 .error-state {
-  color: #e74c3c;
+  color: #c0392b;
 }
+
+/* === LISTA DE RESULTADOS === */
 .resultadoes-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
 }
+
+/* === SCROLLBAR PERSONALIZADO === */
+.resultadoes-list::-webkit-scrollbar {
+  width: 8px;
+}
+.resultadoes-list::-webkit-scrollbar-thumb {
+  background: rgba(198, 163, 79, 0.4); /* acorde a paleta */
+  border-radius: 10px;
+}
+.resultadoes-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(163, 130, 47, 0.8);
+}
+
+/* === RESULTADOS === */
 .results-count {
   font-size: 12px;
-  color: #667eea;
+  color: #A3822F; /* acento paleta */
   margin-bottom: 15px;
   font-weight: 500;
 }
+
 .no-results {
   text-align: center;
   padding: 30px;
   color: #7f8c8d;
 }
+
+/* === ITEMS === */
 .resultado-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8f9fa;
+  background: #fffdf6;
   border-radius: 10px;
   padding: 15px;
   transition: all 0.3s ease;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #C6A34F;
 }
 .resultado-item:hover {
-  background: #e9ecef;
+  background: #fff8e6;
   transform: translateX(5px);
 }
+
 .resultado-info {
   flex: 1;
 }
+
 .resultado-nombre {
   font-weight: 600;
   color: #2c3e50;
   margin: 0 0 8px 0;
   font-size: 16px;
 }
+
 .resultado-detalle {
   font-size: 13px;
   color: #7f8c8d;
   margin: 0 0 5px 0;
 }
 .resultado-detalle strong {
-  color: #667eea;
+  color: #A3822F;
 }
+
 .acciones {
   display: flex;
   gap: 6px;
 }
+
+/* === BOTONES DE ACCIÓN === */
 .edit-btn {
-  background: #3498db;
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #2c3e50;
   border: none;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
+  font-weight: 600;
 }
 .edit-btn:hover {
-  background: #2980b9;
+  background: linear-gradient(135deg, rgba(198,163,79,0.95), #a8883a);
 }
+
 .delete-btn {
   background: #e74c3c;
   color: white;
@@ -411,12 +462,13 @@ export default {
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
+  font-weight: 600;
 }
 .delete-btn:hover {
   background: #c0392b;
 }
 
-/* Modal */
+/* === MODAL === */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -429,8 +481,9 @@ export default {
   justify-content: center;
   z-index: 9999;
 }
+
 .modal-content {
-  background: #fff;
+  background: #fffef5;
   padding: 20px;
   border-radius: 12px;
   width: 400px;
@@ -455,17 +508,18 @@ export default {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
-  border: 1px solid #dee2e6;
+  border: 1px solid #C6A34F;
   border-radius: 6px;
   font-size: 14px;
   box-sizing: border-box;
 }
 .modal-content input:focus,
 .modal-content select:focus {
-  border-color: #667eea;
+  border-color: #A3822F;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 0 0 2px rgba(163, 130, 47, 0.2);
 }
+
 .modal-buttons {
   margin-top: 15px;
   display: flex;
@@ -473,8 +527,8 @@ export default {
   gap: 8px;
 }
 .cancel-btn {
-  background: #95a5a6;
-  color: white;
+  background: #d5d5d5;
+  color: #2c3e50;
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
@@ -482,21 +536,23 @@ export default {
   font-size: 13px;
 }
 .cancel-btn:hover {
-  background: #7f8c8d;
+  background: #bbb;
 }
 .save-btn {
-  background: #3498db;
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #2c3e50;
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
+  font-weight: 600;
 }
 .save-btn:hover {
-  background: #2980b9;
+  background: linear-gradient(135deg, rgba(198,163,79,0.95), #a8883a);
 }
 
+/* === BOTÓN PRINCIPAL (+ NUEVO) === */
 .btn {
   flex: 1;
   padding: 10px 14px;
@@ -508,14 +564,16 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
-  align-items:center;
+  align-items: center;
   justify-content: center;
   gap: 6px;
   text-decoration: none;
 }
-
 .btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgba(198,163,79,0.95), #a8883a);
 }
 </style>

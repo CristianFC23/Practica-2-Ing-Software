@@ -119,16 +119,17 @@ export default {
 </script>
 
 <style scoped>
-/* Mismos estilos que NuevoPersonal.vue */
+/* === Contenedor general === */
 .page-container {
   display: flex;
   justify-content: center;
   align-items: first baseline;
   min-height: 100vh;
-  /* background: #f5f7fa; */
   padding: 20px;
+  background: none;
 }
 
+/* === Layout de tarjeta === */
 .dashboard-cards {
   display: grid;
   grid-template-columns: 1fr;
@@ -137,13 +138,19 @@ export default {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 16px;
   padding: 25px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e8ecf0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(198,163,79,0.25); /* borde suave acorde a paleta */
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.08);
 }
 
+/* === Header de la tarjeta === */
 .card-header {
   display: flex;
   align-items: flex-start;
@@ -158,49 +165,127 @@ export default {
   justify-content: center;
   font-size: 22px;
   margin-right: 15px;
-}
-.ubicaciones-icon {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
   color: white;
+  box-shadow: 0 4px 12px rgba(163,130,47,0.12);
 }
 .card-title h3 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 5px 0;
   color: #2c3e50;
 }
 .card-title p {
-  font-size: 14px;
+  font-size: 13px;
   color: #7f8c8d;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
 }
+
+/* === Labels & campos del formulario === */
 .card-body label {
-  font-size: 15px;
-  font-weight: bold;
-  color: #000000;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3b341b; /* oscuro suave para texto sobre dorado */
+  margin-top: 12px;
+  margin-bottom: 6px;
   display: block;
 }
-.card-body input, .card-body select {
+
+.card-body input,
+.card-body select,
+.card-body textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #dee2e6;
+  border: 1px solid rgba(198,163,79,0.25);
   border-radius: 8px;
   font-size: 14px;
   margin-bottom: 10px;
+  background: #fffef8;
+  color: #2c3e50;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  box-sizing: border-box;
 }
+
+/* focus accesible y acorde a la paleta */
+.card-body input:focus,
+.card-body select:focus,
+.card-body textarea:focus {
+  border-color: #A3822F;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(198,163,79,0.12);
+}
+
+/* helper text / hint */
+.card-body .help-text {
+  font-size: 12px;
+  color: #8a6d2f;
+  margin-top: -6px;
+  margin-bottom: 8px;
+}
+
+/* === Botones === */
 .save-btn {
-  background: #3498db;
-  color: white;
+  background: linear-gradient(135deg, #C6A34F, #A3822F);
+  color: #fffef5;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(163,130,47,0.12);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .save-btn:hover {
-  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(163,130,47,0.16);
+}
+.save-btn:active {
+  transform: translateY(0);
+}
+
+/* boton secundario / cancelar */
+.cancel-btn {
+  background: transparent;
+  color: #4b3d09;
+  border: 1px solid rgba(163,130,47,0.18);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 8px;
+}
+.cancel-btn:hover {
+  background: rgba(198,163,79,0.06);
+}
+
+/* agrupador de botones para alineación */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* === Responsive tweaks === */
+@media (max-width: 520px) {
+  .card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+  .card-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .card-body input,
+  .card-body select,
+  .card-body textarea {
+    padding: 10px;
+  }
+  .save-btn, .cancel-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
 }
 </style>
